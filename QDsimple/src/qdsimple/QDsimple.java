@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 /**
  *
  * @author Finn.Kafka666
+ * @author realsazzad
  */
 public class QDsimple extends Application {
     
@@ -21,7 +22,6 @@ public class QDsimple extends Application {
         
         stage.setScene(scene);
         stage.show();
-        //sazzad
     }
 
     /**

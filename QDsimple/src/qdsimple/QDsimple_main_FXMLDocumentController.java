@@ -17,6 +17,7 @@ import javafx.scene.layout.BorderPane;
 /**
  *
  * @author Finn.Kafka666
+ * @author realsazzad
  */
 public class QDsimple_main_FXMLDocumentController implements Initializable {
 
