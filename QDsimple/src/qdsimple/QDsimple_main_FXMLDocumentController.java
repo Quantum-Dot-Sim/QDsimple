@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 /**
@@ -33,6 +34,8 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private Menu Help_MenuBar_BorderPane_Main;
     @FXML
     private MenuItem About_Help_MenuBar_BorderPane_Main;
+    @FXML
+    private AnchorPane AnchorPaneRight_BorderPane_Main;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
