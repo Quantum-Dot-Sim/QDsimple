@@ -3,27 +3,38 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
 
-<BorderPane fx:id="BorderPane_Main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qdsimple.QDsimple_main_FXMLDocumentController">
-   <top>
-      <MenuBar fx:id="MenuBar_BorderPane_Main" BorderPane.alignment="CENTER">
-        <menus>
-          <Menu fx:id="File_MenuBar_BorderPane_Main" mnemonicParsing="false" text="File">
-            <items>
-              <MenuItem fx:id="Close_File_MenuBar_BorderPane_Main" mnemonicParsing="false" text="Close" />
-            </items>
-          </Menu>
-          <Menu fx:id="Help_MenuBar_BorderPane_Main" mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem fx:id="About_Help_MenuBar_BorderPane_Main" mnemonicParsing="false" text="About" />
-            </items>
-          </Menu>
-        </menus>
-      </MenuBar>
-   </top>
-   <right>
-      <AnchorPane fx:id="AnchorPaneRight_BorderPane_Main" prefHeight="695.0" prefWidth="229.0" style="-fx-background-color: #5c6bc0;" BorderPane.alignment="CENTER" />
-   </right>
-</BorderPane>
+
+<StackPane fx:id="StackPane_Dialog" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qdsimple.QDsimple_main_FXMLDocumentController">
+   <children>
+      <BorderPane fx:id="BorderPane_Main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0">
+         <top>
+            <MenuBar fx:id="MenuBar_BorderPane_Main" BorderPane.alignment="CENTER">
+              <menus>
+                <Menu fx:id="File_MenuBar_BorderPane_Main" mnemonicParsing="false" text="File">
+                  <items>
+                    <MenuItem fx:id="Close_File_MenuBar_BorderPane_Main" mnemonicParsing="false" onAction="#Activated_Close_File_MenuBar_BorderPane_Main_f" text="Close program     ">
+                           <accelerator>
+                              <KeyCodeCombination alt="DOWN" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                           </accelerator>
+                        </MenuItem>
+                  </items>
+                </Menu>
+                <Menu fx:id="Help_MenuBar_BorderPane_Main" mnemonicParsing="false" text="Help">
+                  <items>
+                    <MenuItem fx:id="About_Help_MenuBar_BorderPane_Main" mnemonicParsing="false" onAction="#Activated_About_Help_MenuBar_BorderPane_Main_f" text="About QDsimple" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+         </top>
+         <right>
+            <AnchorPane fx:id="AnchorPaneRight_BorderPane_Main" prefHeight="695.0" prefWidth="229.0" style="-fx-background-color: #5c6bc0;" BorderPane.alignment="CENTER" />
+         </right>
+      </BorderPane>
+   </children>
+</StackPane>

@@ -1,3 +1,9 @@
+/**
+ *
+ * @author Finn.Kafka666
+ * @author realsazzad
+ * 
+*/
 
 package qdsimple;
 
@@ -8,11 +14,6 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
-/**
- *
- * @author Finn.Kafka666
- * @author realsazzad
- */
 public class QDsimple extends Application {
     
     // Used to manipulate this main program from any controller class
@@ -45,6 +46,11 @@ public class QDsimple extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    // Function to exit program
+    public void exit_program() {
+        System.exit(0);
     }
     
 }
