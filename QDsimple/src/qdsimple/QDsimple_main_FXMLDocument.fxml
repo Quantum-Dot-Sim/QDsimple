@@ -12,32 +12,31 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.StackPane?>
 
-
-<StackPane fx:id="StackPane_Dialog" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qdsimple.QDsimple_main_FXMLDocumentController">
+<StackPane fx:id="stackpane_dialog" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="qdsimple.QDsimple_main_FXMLDocumentController">
    <children>
-      <BorderPane fx:id="BorderPane_Main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0">
+      <BorderPane fx:id="borderpane_main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0">
          <top>
-            <MenuBar fx:id="MenuBar_BorderPane_Main" BorderPane.alignment="CENTER">
+            <MenuBar fx:id="menubar_borderpane_main" BorderPane.alignment="CENTER">
                <menus>
-                  <Menu fx:id="File_MenuBar_BorderPane_Main" mnemonicParsing="false" text="File">
+                  <Menu fx:id="file_menubar_borderpane_main" mnemonicParsing="false" text="File">
                      <items>
-                        <MenuItem fx:id="Close_File_MenuBar_BorderPane_Main" mnemonicParsing="false" onAction="#Activated_Close_File_MenuBar_BorderPane_Main_f" text="Close program     ">
+                        <MenuItem fx:id="close_file_menubar_borderpane_main" mnemonicParsing="false" onAction="#activated_close_file_menubar_borderpane_main_f" text="Close program     ">
                            <accelerator>
                               <KeyCodeCombination alt="DOWN" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
                            </accelerator>
                         </MenuItem>
                      </items>
                   </Menu>
-                  <Menu fx:id="Help_MenuBar_BorderPane_Main" mnemonicParsing="false" text="Help">
+                  <Menu fx:id="help_menubar_borderpane_main" mnemonicParsing="false" text="Help">
                      <items>
-                        <MenuItem fx:id="About_Help_MenuBar_BorderPane_Main" mnemonicParsing="false" onAction="#Activated_About_Help_MenuBar_BorderPane_Main_f" text="About QDsimple" />
+                        <MenuItem fx:id="about_help_menubar_borderpane_main" mnemonicParsing="false" onAction="#activated_about_help_menubar_borderpane_main_f" text="About QDsimple" />
                      </items>
                   </Menu>
                </menus>
             </MenuBar>
          </top>
          <right>
-            <AnchorPane fx:id="AnchorPaneRight_BorderPane_Main" prefHeight="695.0" prefWidth="188.0" style="-fx-background-color: indigo;" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="anchorpaneright_borderpane_main" prefHeight="695.0" prefWidth="188.0" style="-fx-background-color: indigo;" BorderPane.alignment="CENTER">
                <effect>
                   <Glow />
                </effect>
