@@ -56,8 +56,20 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        // Dynamically change window size
+        Window_resize_listener_f();
+        
     }    
+    
+    @FXML
+    private void Window_resize_listener_f() {
+        StackPane_Dialog.widthProperty().addListener((obs, oldVal, newVal) ->{
+            BorderPane_Main.setPrefWidth(newVal.doubleValue());
+        });
+        StackPane_Dialog.heightProperty().addListener((obs, oldVal, newVal) ->{
+            BorderPane_Main.setPrefHeight(newVal.doubleValue());
+        });
+    }
 
     @FXML
     private void Activated_Close_File_MenuBar_BorderPane_Main_f(ActionEvent event) {
