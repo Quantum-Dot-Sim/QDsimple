@@ -53,6 +53,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private MenuItem About_Help_MenuBar_BorderPane_Main;
     @FXML
     private AnchorPane AnchorPaneRight_BorderPane_Main;
+    @FXML
     private StackPane StackPane_Dialog;
     @FXML
     private Button cube_button;
@@ -81,7 +82,6 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         
     }    
     
-    @FXML
     private void Window_resize_listener_f() {
         StackPane_Dialog.widthProperty().addListener((obs, oldVal, newVal) ->{
             BorderPane_Main.setPrefWidth(newVal.doubleValue());
