@@ -29,6 +29,9 @@ import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.events.JFXDialogEvent;
 import javafx.event.EventHandler;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
@@ -50,8 +53,25 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private MenuItem About_Help_MenuBar_BorderPane_Main;
     @FXML
     private AnchorPane AnchorPaneRight_BorderPane_Main;
-    @FXML
     private StackPane StackPane_Dialog;
+    @FXML
+    private Button cube_button;
+    @FXML
+    private Button circle_button;
+    @FXML
+    private Button cone_button;
+    @FXML
+    private Button cylinder_button;
+    @FXML
+    private Button sphere_button;
+    @FXML
+    private Button cube_button211;
+    @FXML
+    private ImageView line_button;
+    @FXML
+    private ScrollPane scroll_pane;
+    @FXML
+    private Canvas canvas_panel;
             
             
     @Override
@@ -86,6 +106,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         About_content.setBody(new Text("QDsimple is an open source quantum device simulation software, with which users will be able to construct\n"
                 + "various quantum devices and run simulations on desired sub - domains of said devices. The project is under \n" 
                 + "development by the group Artificial Indie Collaborations. For reference to the source code, contact AI collab.\n"));
+        
         
         JFXDialog About_dialog = new JFXDialog(StackPane_Dialog, About_content, JFXDialog.DialogTransition.CENTER);
         JFXButton About_button = new JFXButton("Okay");
