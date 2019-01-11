@@ -55,6 +55,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private AnchorPane AnchorPaneRight_BorderPane_Main;
     @FXML
     private StackPane StackPane_Dialog;
+    double StackPane_Dialog_h, StackPane_Dialog_w;
     @FXML
     private Button cube_button;
     @FXML
@@ -77,17 +78,22 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Dynamically change window size
+        // Dynamically change window size whenever window size is changed
+        StackPane_Dialog_w = StackPane_Dialog.widthProperty().doubleValue();
+        StackPane_Dialog_h = StackPane_Dialog.heightProperty().doubleValue();
         Window_resize_listener_f();
+        
         
     }    
     
     private void Window_resize_listener_f() {
         StackPane_Dialog.widthProperty().addListener((obs, oldVal, newVal) ->{
-            BorderPane_Main.setPrefWidth(newVal.doubleValue());
+            StackPane_Dialog_w = newVal.doubleValue();
+            BorderPane_Main.setPrefWidth(StackPane_Dialog_w);
         });
         StackPane_Dialog.heightProperty().addListener((obs, oldVal, newVal) ->{
-            BorderPane_Main.setPrefHeight(newVal.doubleValue());
+            StackPane_Dialog_h = newVal.doubleValue();
+            BorderPane_Main.setPrefHeight(StackPane_Dialog_h);
         });
     }
 
