@@ -410,7 +410,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             String str1 = shape_list_cb.getValue(); 
             String str2 = plane_list_cb.getValue();
             
-            if(!str1.equals("None") && !str2.equals("None"))
+            if(!(str1.equals("None") || !str2.equals("None")))
             {
                 String[] temp;
                 temp = str1.split("_");
