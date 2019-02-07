@@ -9,15 +9,19 @@ package qdsimple;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Camera;
 import javafx.scene.Parent;
+import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class QDsimple extends Application {
     
     // Used to manipulate this main program from any controller class
-    private static QDsimple QDsimple_main;
+    public static QDsimple QDsimple_main;
     
     // Populate the QDsimple_main object with currently instantiated project object
     public QDsimple(){
@@ -35,10 +39,12 @@ public class QDsimple extends Application {
         
         Scene scene = new Scene(root);
         
+        
         stage.setScene(scene);
         stage.getIcons().add(new Image("/images/QDsimple_logo.png"));
         stage.setTitle("Quantum Device Simulator Package");
         stage.show(); 
+        
     }
 
     /**
