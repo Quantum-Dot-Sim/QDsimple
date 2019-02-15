@@ -28,6 +28,7 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.events.JFXDialogEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -39,7 +40,6 @@ import javafx.collections.ObservableList;
 
 import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
-import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Camera;
 import javafx.scene.Cursor;
@@ -61,6 +61,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -82,6 +83,7 @@ import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 public class QDsimple_main_FXMLDocumentController implements Initializable {
@@ -138,15 +140,21 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     //Custom Variable Declaration  
     SmartGroup group=new SmartGroup();
     Camera pers_camera;
+    
+    
+    String selected_shape;
+    int selected_shape_id;
+    
+    
    
     //Color & material for the shapes
-    final PhongMaterial blueMaterial = new PhongMaterial();
-    final PhongMaterial redMaterial = new PhongMaterial();
-    final PhongMaterial greenMaterial = new PhongMaterial();
-    final PhongMaterial brownMaterial = new PhongMaterial();
-    final PhongMaterial orangeMaterial = new PhongMaterial();
-    final PhongMaterial magentaMaterial = new PhongMaterial();
-    final PhongMaterial indigoMaterial = new PhongMaterial();
+    PhongMaterial blueMaterial = new PhongMaterial();
+    PhongMaterial redMaterial = new PhongMaterial();
+    PhongMaterial greenMaterial = new PhongMaterial();
+    PhongMaterial brownMaterial = new PhongMaterial();
+    PhongMaterial orangeMaterial = new PhongMaterial();
+    PhongMaterial magentaMaterial = new PhongMaterial();
+    PhongMaterial indigoMaterial = new PhongMaterial();
         
     
     @FXML
@@ -182,6 +190,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private TextField depth_tf;
     @FXML
     private Button delete_shape_button;
+    @FXML
+    private Button up_right_button1;
+    @FXML
+    private ImageView rotate_x_button;
+    @FXML
+    private Button rotate_y_button;
+    @FXML
+    private Button choose_image_button;
 
     
         
@@ -199,38 +215,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
        center_pane.setDepthTest(DepthTest.ENABLE);
        center_pane.getChildren().add(subscene);
        
-       
-       //subscene.setFocusTraversable(true);
-       //subscene.setPickOnBounds(true);
-       
-        
-        //Adding value to combobox
-        
-       
-       //Initiallizing colors
-       blueMaterial.setDiffuseColor(Color.DARKBLUE);  //GaAs
-       blueMaterial.setSpecularColor(Color.BLUE);
-       
-       redMaterial.setDiffuseColor(Color.DARKRED);      //Si
-       redMaterial.setSpecularColor(Color.RED);
-       
-       greenMaterial.setDiffuseColor(Color.DARKGREEN);  //P
-       greenMaterial.setSpecularColor(Color.GREEN);
-       
-       brownMaterial.setDiffuseColor(Color.DARKGOLDENROD);     //AlGaAs
-       brownMaterial.setSpecularColor(Color.SIENNA);
-       
-       orangeMaterial.setDiffuseColor(Color.DARKORANGE);     //SiO2
-       orangeMaterial.setSpecularColor(Color.ORANGE);
-       
-       magentaMaterial.setDiffuseColor(Color.DARKMAGENTA);  //Al2O3
-       magentaMaterial.setSpecularColor(Color.MAGENTA);
-       
-       indigoMaterial.setDiffuseColor(Color.AQUAMARINE);    //SiNi
-       indigoMaterial.setSpecularColor(Color.AQUA);
-       
-       
-       //group.getChildren().add(new AmbientLight());
+       init_colors();
        initMouseControl(group,subscene);
        buildAxes();
        camera_set();
@@ -238,6 +223,32 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
        init_shapes();
        
             
+    }
+    
+    void init_colors()
+    {
+        //Initiallizing colors
+       blueMaterial.setDiffuseColor(Color.LIGHTBLUE);  //GaAs
+       blueMaterial.setSpecularColor(Color.BLUE);
+       
+       redMaterial.setDiffuseColor(Color.CRIMSON);      //Si
+       redMaterial.setSpecularColor(Color.RED);
+       
+       greenMaterial.setDiffuseColor(Color.LIGHTGREEN);  //P
+       greenMaterial.setSpecularColor(Color.GREEN);
+       
+       brownMaterial.setDiffuseColor(Color.BROWN);     //AlGaAs
+       brownMaterial.setSpecularColor(Color.SIENNA);
+       
+       orangeMaterial.setDiffuseColor(Color.CORAL);     //SiO2
+       orangeMaterial.setSpecularColor(Color.ORANGE);
+       
+       magentaMaterial.setDiffuseColor(Color.FUCHSIA);  //Al2O3
+       magentaMaterial.setSpecularColor(Color.MAGENTA);
+       
+       indigoMaterial.setDiffuseColor(Color.AQUAMARINE);    //SiNi
+       indigoMaterial.setSpecularColor(Color.AQUA);
+          
     }
     
     void init_combo_box()
@@ -275,9 +286,9 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         cylinder=null;
         sphere=null;
         
-        box= new SmartBox[10];
-        cylinder= new SmartCylinder[10];
-        sphere= new SmartSphere[10];
+        box= new SmartBox[15];
+        cylinder= new SmartCylinder[15];
+        sphere= new SmartSphere[15];
         box_no=0;
         cylinder_no=0;
         sphere_no=0;
@@ -403,14 +414,17 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             double z=Double.parseDouble(depth_tf.getText());
             
             box_property_change(id,x,y,z,color,mat_type,dop,mat);
-            
-            //calling connect_box & passsing parameters
-            
+           
+            //calling connect_box & passsing parameters 
             
             String str1 = shape_list_cb.getValue(); 
             String str2 = plane_list_cb.getValue();
             
-            if(!(str1.equals("None") || !str2.equals("None")))
+            if(str1.equals("None") || str2.equals("None"))
+            {
+                
+            }
+            else
             {
                 String[] temp;
                 temp = str1.split("_");
@@ -420,9 +434,9 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                     int index= plane_list_cb.getSelectionModel().getSelectedIndex();
                     connect_box(id,box_two,index);
                 }
+                
             }
-            
-            
+                       
         }
         else if(tempArray[0].equals("cylinder"))
         {
@@ -440,8 +454,83 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             
             double r=Double.parseDouble(radius_tf.getText()); 
             sphere_property_change(id,r,color,mat_type,dop,mat);
-            
+          
         }
+        
+        
+    }
+    
+    void get_selected_shape()
+    {
+        //JFXDialog About_dialog = new JFXDialog(StackPane_Dialog, About_content, JFXDialog.DialogTransition.CENTER);
+        String stringToSplit = shape_id_tf.getText();    
+        String[] tempArray;
+        tempArray = stringToSplit.split("_");
+        selected_shape=tempArray[0];
+        selected_shape_id= Integer.parseInt(tempArray[1]);
+    }
+    
+    
+    @FXML
+    private void choose_image_button_clicked(MouseEvent event) 
+    {   
+        // Getting the current shape type and id
+        String stringToSplit = shape_id_tf.getText();    
+        String[] tempArray;
+        tempArray = stringToSplit.split("_");
+
+        int id=Integer.parseInt(tempArray[1]);
+        String shape=tempArray[0];
+        
+        //if texture wanted to be removed
+        if(choose_image_button.getText().equals("Remove Texture"))
+        {
+            if(shape.equals("box"))
+            {
+                box[id].texture_file=null;
+                box[id].setMaterial(blueMaterial);
+            }
+            else if(shape.equals("cylinder"))
+            {
+                cylinder[id].texture_file=null;
+                cylinder[id].setMaterial(blueMaterial);
+            }
+            else if(shape.equals("sphere"))
+            {
+                sphere[id].texture_file=null;
+                sphere[id].setMaterial(blueMaterial);
+            }
+            choose_image_button.setText("Choose Image");
+        }
+        //if texture wanted to be included
+        else
+        {
+            FileChooser file_chooser = new FileChooser();
+            file_chooser.setTitle("Open Resource File");
+            File file = file_chooser.showOpenDialog(new Stage());
+                if (file != null) 
+                {
+
+                    if(shape.equals("box"))
+                    {
+                        box[id].texture_file=file.toURI().toString();
+                        box[id].set_texture_material();
+                    }
+                    else if(shape.equals("cylinder"))
+                    {
+                        cylinder[id].texture_file=file.toURI().toString();
+                        cylinder[id].set_texture_material();
+                    }
+                    else if(shape.equals("sphere"))
+                    {
+                        sphere[id].texture_file=file.toURI().toString();
+                        sphere[id].set_texture_material();
+                    }
+
+                }          
+        }
+        
+        
         
     }
     
@@ -449,15 +538,18 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     TimerTask task; 
     int counter=0;
     int i=0;
+    
 
     
     private class MyTimerTask extends TimerTask {
         int offset;
-        int axis_no;   //1 for X,2 for Y, 3 for Z
-        MyTimerTask(int x, int y)
+        int axis_no; //1 for X,2 for Y, 3 for Z
+        boolean rotate;  
+        MyTimerTask(int x, int y, boolean r)
         {
             this.offset=x;
             this.axis_no=y;
+            this.rotate=r;
         }
         @Override
         public void run()
@@ -470,11 +562,29 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             { 
                 if(axis_no==1)
                 {
-                   box[id].translateXProperty().set(box[id].getTranslateX() + offset); 
+                   if (this.rotate)
+                   {
+                       box[id].translateXProperty().set(box[id].getTranslateX() + offset);
+                   }
+                   else
+                   {
+                       box[id].setRotationAxis(Rotate.X_AXIS);
+                       box[id].rotateProperty().set(box[id].getRotate()+offset);
+                   }
+                   
                 }
                 else if(axis_no==2)
                 {
-                   box[id].translateYProperty().set(box[id].getTranslateY() + offset);
+                    if (this.rotate)
+                   {
+                      box[id].translateYProperty().set(box[id].getTranslateY() + offset);
+                   }
+                   else
+                   {
+                       box[id].setRotationAxis(Rotate.Y_AXIS);
+                       box[id].rotateProperty().set(box[id].getRotate()+offset);
+                   }
+                    
                 }
                 else if(axis_no==3)
                 {
@@ -487,11 +597,29 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             {
                 if(axis_no==1)
                 {
-                    cylinder[id].translateXProperty().set(cylinder[id].getTranslateX() + offset);
+                    if (this.rotate)
+                    {
+                        cylinder[id].translateXProperty().set(cylinder[id].getTranslateX() + offset);
+                    }
+                   else
+                    {
+                        cylinder[id].setRotationAxis(Rotate.X_AXIS);
+                        cylinder[id].rotateProperty().set(cylinder[id].getRotate()+offset);
+                    }
+                   
                 }
                 else if(axis_no==2)
                 {
-                  cylinder[id].translateYProperty().set(cylinder[id].getTranslateY() + offset); 
+                    if (this.rotate)
+                    {        
+                        cylinder[id].translateYProperty().set(cylinder[id].getTranslateY() + offset);
+                    }
+                   else
+                    {
+                        cylinder[id].setRotationAxis(Rotate.Y_AXIS);
+                        cylinder[id].rotateProperty().set(cylinder[id].getRotate()+offset);
+                    }
+                   
                 }
                 else if(axis_no==3)
                 {
@@ -505,11 +633,30 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             {
                 if(axis_no==1)
                 {
-                   sphere[id].translateXProperty().set(sphere[id].getTranslateX() + offset); 
+                    if (this.rotate)
+                    {        
+                        sphere[id].translateXProperty().set(sphere[id].getTranslateX() + offset); 
+                    }
+                    else
+                    {
+                        sphere[id].setRotationAxis(Rotate.X_AXIS);
+                        sphere[id].rotateProperty().set(sphere[id].getRotate()+offset);
+                    }
+                    
+                   
                 }
                 else if(axis_no==2)
                 {
-                   sphere[id].translateYProperty().set(sphere[id].getTranslateY() + offset);  
+                   if (this.rotate)
+                    {        
+                        sphere[id].translateYProperty().set(sphere[id].getTranslateY() + offset); 
+                    }
+                    else
+                    {
+                        sphere[id].setRotationAxis(Rotate.Y_AXIS);
+                        sphere[id].rotateProperty().set(sphere[id].getRotate()+offset);
+                    } 
+                     
                 }
                 else if(axis_no==3)
                 {
@@ -528,7 +675,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(-5,2);
+            task=new MyTimerTask(-5,2,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -550,7 +697,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(-5,1);
+            task=new MyTimerTask(-5,1,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -573,7 +720,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(5,2);
+            task=new MyTimerTask(5,2,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -592,7 +739,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(5,1);
+            task=new MyTimerTask(5,1,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -612,7 +759,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(5,3);
+            task=new MyTimerTask(5,3,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -632,7 +779,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(-5,3);
+            task=new MyTimerTask(-5,3,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -645,6 +792,48 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
        task.cancel(); 
     }
     
+    @FXML
+    private void rorate_x_button_pressed(MouseEvent event) 
+    {
+        if (counter==0)
+        {
+            timer= new Timer();
+            task=new MyTimerTask(5,1,false);
+            timer.scheduleAtFixedRate(task, 0, 100);
+            counter++;
+        }
+        
+    }
+ 
+    @FXML
+    private void rotate_x_button_released(MouseEvent event) 
+    {
+       counter=0;
+       timer.cancel();
+       task.cancel(); 
+    }
+    
+    
+    @FXML
+    private void rotate_y_button_pressed(MouseEvent event) 
+    {
+        if (counter==0)
+        {
+            timer= new Timer();
+            task=new MyTimerTask(5,2,false);
+            timer.scheduleAtFixedRate(task, 0, 100);
+            counter++;
+        }
+    }
+
+    
+    @FXML
+    private void rotate_y_button_released(MouseEvent event) 
+    {
+       counter=0;
+       timer.cancel();
+       task.cancel(); 
+    }
 
     class SmartGroup extends Group 
     {
@@ -672,6 +861,9 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         String doping;
         String material_type;
         int id;
+        Image tex;
+        PhongMaterial tex_material = new PhongMaterial();
+        String texture_file;
         SmartBox(int i,double x, double y, double z)
         {
             this.id=i;
@@ -681,8 +873,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             this.doping="neutral";
             this.material="GaAs"; 
             this.material_type="Semi Conductor";
-           
-            
+                      
         }
         
         void setDoping(String d)
@@ -696,6 +887,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         void set_material_type(String m)
         {
             this.material_type=m;
+        }
+       
+        void set_texture_material()
+        {
+            tex=new Image(texture_file);
+            this.tex_material.setDiffuseMap(tex);
+            this.setMaterial(tex_material);
+            
         }
         
         
@@ -735,11 +934,15 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         box[n].setHeight(x);
         box[n].setWidth(y);
         box[n].setDepth(z);
-        box[n].setMaterial(color);
+        if(box[n].texture_file==null)
+        {
+            box[n].setMaterial(color);
+        }  
+         
         box[n].set_material_type(material_type);
         box[n].set_new_material(mat);
         box[n].setDoping(doping);
-       
+                 
     }
     
     void connect_box(int n, int m,int side_no)              // n= box no which is to be connected , m= box no where it will connect
@@ -799,6 +1002,9 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         String color;
         String material_type;
         int id;
+        Image tex;
+        String texture_file;
+        PhongMaterial tex_material= new PhongMaterial();
         SmartCylinder(int i,double x, double r)
         {
             this.id=i;
@@ -825,6 +1031,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             this.material_type=m;
         }
         
+        void set_texture_material()
+        {
+            tex=new Image(texture_file);
+            this.tex_material.setDiffuseMap(tex);
+            this.setMaterial(tex_material);
+            
+        }
+        
     }
     
    
@@ -838,7 +1052,6 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         //cylinder[cylinder_no].setOnMouseDragged(dragMouse());
         cylinder[cylinder_no].setOnMouseClicked((MouseEvent me) -> 
         {
-          
             set_shape_property(me);
         });
        
@@ -853,10 +1066,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         cylinder[n].setHeight(x);
         cylinder[n].setRadius(r);
         cylinder[n].set_new_material(mat);
-        cylinder[n].setMaterial(color);
+        if(cylinder[n].texture_file==null)
+        {
+           cylinder[n].setMaterial(color);  
+        }
+        
         cylinder[n].set_material_type(material_type);
         cylinder[n].setDoping(doping);
-       
+         
     }
     
     class SmartSphere extends Sphere
@@ -865,7 +1082,9 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         String doping;
         String material_type;
         int id;
-        
+        Image tex;
+        String texture_file;
+        PhongMaterial tex_material=new PhongMaterial();
         SmartSphere(int i,double r)
         {
             this.id=i;            
@@ -888,6 +1107,13 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         void set_material_type(String m)
         {
             this.material_type=m;
+        }
+        void set_texture_material()
+        {
+            tex=new Image(texture_file);
+            this.tex_material.setDiffuseMap(tex);
+            this.setMaterial(tex_material);
+            
         }
         
     }
@@ -916,9 +1142,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         
         sphere[n].setRadius(r);
         sphere[n].set_new_material(mat);
-        sphere[n].setMaterial(color);
+        if(sphere[n].texture_file==null)
+        {
+          sphere[n].setMaterial(color);  
+        }
+        
         sphere[n].set_material_type(material_type);
         sphere[n].setDoping(doping);
+        
        
     }
     
@@ -956,7 +1187,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         init_shapes();
         shape_list_cb.getItems().clear();
         shape_list_cb.getItems().add("None");
-        
+        shape_list_cb.getSelectionModel().select("None");
         
     }
     
@@ -1022,6 +1253,15 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                 material_cb.getSelectionModel().select(box[id].material);
                 doping_cb.getSelectionModel().select(box[id].doping);
                 material_type_cb.getSelectionModel().select(box[id].material_type);
+                
+                if(box[id].texture_file!=null)
+                {
+                    choose_image_button.setText("Remove Texture");
+                }
+                else
+                {
+                    choose_image_button.setText("Choose Image");
+                }
 
 
             }
@@ -1040,6 +1280,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                 material_cb.getSelectionModel().select(cylinder[id].material);
                 doping_cb.getSelectionModel().select(cylinder[id].doping);
                 material_type_cb.getSelectionModel().select(cylinder[id].material_type);
+                if(cylinder[id].texture_file!=null)
+                {
+                    choose_image_button.setText("Remove Texture");
+                }
+                else
+                {
+                    choose_image_button.setText("Choose Image");
+                }
 
             }
             else if (event.getSource() instanceof SmartSphere) 
@@ -1055,6 +1303,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                 material_cb.getSelectionModel().select(sphere[id].material);
                 doping_cb.getSelectionModel().select(sphere[id].doping);
                 material_type_cb.getSelectionModel().select(sphere[id].material_type);
+                if(sphere[id].texture_file!=null)
+                {
+                    choose_image_button.setText("Remove Texture");
+                }
+                else
+                {
+                    choose_image_button.setText("Choose Image");
+                }
 
             }
 

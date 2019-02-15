@@ -43,6 +43,12 @@ public class QDsimple extends Application {
         stage.setScene(scene);
         stage.getIcons().add(new Image("/images/QDsimple_logo.png"));
         stage.setTitle("Quantum Device Simulator Package");
+        stage.maximizedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                stage.setFullScreen(true);
+        });
+
+        
         stage.show(); 
         
     }

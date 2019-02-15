@@ -47,51 +47,46 @@
                   <Glow />
                </effect>
                <children>
-                  <Label layoutX="104.0" layoutY="14.0" text="Dimension" textFill="#f5f4f4">
+                  <Label layoutX="12.0" layoutY="105.0" text="Height" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="12.0" layoutY="50.0" text="Height" textFill="#f5f4f4">
+                  <TextField fx:id="height_tf" alignment="CENTER" layoutX="92.0" layoutY="103.0" prefHeight="24.0" prefWidth="80.0" text="50" />
+                  <Label layoutX="14.0" layoutY="136.0" text="Width" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="height_tf" alignment="CENTER" layoutX="73.0" layoutY="47.0" prefHeight="24.0" prefWidth="80.0" text="50" />
-                  <Label layoutX="14.0" layoutY="89.0" text="Width" textFill="#f5f4f4">
+                  <TextField fx:id="width_tf" alignment="CENTER" layoutX="92.0" layoutY="134.0" prefHeight="24.0" prefWidth="80.0" text="50" />
+                  <Label layoutX="15.0" layoutY="167.0" text="Depth" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="width_tf" alignment="CENTER" layoutX="73.0" layoutY="88.0" prefHeight="24.0" prefWidth="80.0" text="50" />
-                  <Label layoutX="14.0" layoutY="128.0" text="Depth" textFill="#f5f4f4">
+                  <TextField fx:id="depth_tf" alignment="CENTER" layoutX="92.0" layoutY="166.0" prefHeight="24.0" prefWidth="80.0" text="50" />
+                  <Label layoutX="13.0" layoutY="202.0" text="Radius" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="depth_tf" alignment="CENTER" layoutX="73.0" layoutY="127.0" prefHeight="24.0" prefWidth="80.0" text="50" />
-                  <Label layoutX="14.0" layoutY="168.0" text="Radius" textFill="#f5f4f4">
+                  <TextField fx:id="radius_tf" alignment="CENTER" layoutX="92.0" layoutY="200.0" prefHeight="24.0" prefWidth="80.0" text="20" />
+                  <Label layoutX="216.0" layoutY="105.0" text="nm" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="radius_tf" alignment="CENTER" layoutX="73.0" layoutY="167.0" prefHeight="24.0" prefWidth="80.0" text="20" />
-                  <Label layoutX="168.0" layoutY="50.0" text="nm" textFill="#f5f4f4">
+                  <Label layoutX="216.0" layoutY="137.0" text="nm" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="168.0" layoutY="91.0" text="nm" textFill="#f5f4f4">
+                  <Label layoutX="216.0" layoutY="168.0" text="nm" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="168.0" layoutY="128.0" text="nm" textFill="#f5f4f4">
-                     <font>
-                        <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="168.0" layoutY="169.0" text="nm" textFill="#f5f4f4">
+                  <Label layoutX="216.0" layoutY="202.0" text="nm" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -111,7 +106,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="13.0" layoutY="378.0" text="Shape ID" textFill="#f5f4f4">
+                  <Label layoutX="13.0" layoutY="22.0" text="Shape ID" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -140,7 +135,7 @@
                   <ComboBox fx:id="material_type_cb" layoutX="93.0" layoutY="315.0" prefWidth="150.0" />
                   <ComboBox fx:id="material_cb" layoutX="93.0" layoutY="242.0" prefWidth="150.0" />
                   <ComboBox fx:id="doping_cb" layoutX="93.0" layoutY="278.0" prefWidth="150.0" />
-                  <Label fx:id="shape_id_tf" layoutX="94.0" layoutY="378.0" prefHeight="18.0" prefWidth="120.0" textFill="#f5f4f4">
+                  <Label fx:id="shape_id_tf" layoutX="93.0" layoutY="22.0" prefHeight="20.0" prefWidth="113.0" textFill="#f5f4f4">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
@@ -162,15 +157,21 @@
                   </Label>
                   <ComboBox fx:id="shape_list_cb" layoutX="97.0" layoutY="530.0" prefWidth="150.0" />
                   <ComboBox fx:id="plane_list_cb" layoutX="97.0" layoutY="572.0" prefWidth="150.0" />
-                  <Button fx:id="delete_shape_button" layoutX="219.0" layoutY="373.0" mnemonicParsing="false" onMouseClicked="#delete_shape_button_clicked" prefHeight="31.0" prefWidth="40.0">
+                  <Button fx:id="delete_shape_button" layoutX="215.0" layoutY="17.0" mnemonicParsing="false" onMouseClicked="#delete_shape_button_clicked" prefHeight="21.0" prefWidth="30.0">
                      <graphic>
-                        <ImageView fitHeight="23.0" fitWidth="51.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="17.0" fitWidth="17.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/Trash_60px.png" />
                            </image>
                         </ImageView>
                      </graphic>
                   </Button>
+                  <Label layoutX="10.0" layoutY="54.0" prefHeight="20.0" prefWidth="64.0" text="Texture" textFill="#f5f4f4">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="choose_image_button" layoutX="92.0" layoutY="52.0" mnemonicParsing="false" onMouseClicked="#choose_image_button_clicked" text="Choose Image" />
                </children>
             </AnchorPane>
          </right>
@@ -261,7 +262,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="up_right_button" layoutX="83.0" layoutY="561.0" mnemonicParsing="false" onMousePressed="#up_right_button_pressed" onMouseReleased="#up_right_button_released" prefHeight="26.0" prefWidth="22.0">
+                  <Button fx:id="up_right_button" layoutX="15.0" layoutY="591.0" mnemonicParsing="false" onMousePressed="#up_right_button_pressed" onMouseReleased="#up_right_button_released" prefHeight="26.0" prefWidth="22.0">
                      <graphic>
                         <ImageView fitHeight="15.0" fitWidth="14.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -270,11 +271,29 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="down_left_button" layoutX="48.0" layoutY="587.0" mnemonicParsing="false" onMousePressed="#down_left_button_pressed" onMouseReleased="#down_left_button_released" prefHeight="19.0" prefWidth="30.0">
+                  <Button fx:id="down_left_button" layoutX="14.0" layoutY="630.0" mnemonicParsing="false" onMousePressed="#down_left_button_pressed" onMouseReleased="#down_left_button_released" prefHeight="19.0" prefWidth="30.0">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/Down%20Left_96px.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="up_right_button1" layoutX="55.0" layoutY="591.0" mnemonicParsing="false" onMousePressed="#rorate_x_button_pressed" onMouseReleased="#rotate_x_button_released" prefHeight="26.0" prefWidth="22.0">
+                     <graphic>
+                        <ImageView fx:id="rotate_x_button" fitHeight="21.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/rotate_x.png" />
+                           </image>
+                        </ImageView>
+                     </graphic>
+                  </Button>
+                  <Button fx:id="rotate_y_button" layoutX="55.0" layoutY="629.0" mnemonicParsing="false" onMousePressed="#rotate_y_button_pressed" onMouseReleased="#rotate_y_button_released" prefHeight="26.0" prefWidth="22.0">
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="14.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/rotate_y.png" />
                            </image>
                         </ImageView>
                      </graphic>
