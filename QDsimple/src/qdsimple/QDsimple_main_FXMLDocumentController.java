@@ -28,7 +28,9 @@ import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.events.JFXDialogEvent;
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -37,6 +39,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 
 import javafx.scene.paint.Color;
 import javafx.event.EventHandler;
@@ -49,6 +52,7 @@ import javafx.scene.ParallelCamera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
 import javafx.scene.SceneAntialiasing;
+import javafx.scene.SceneBuilder;
 import javafx.scene.SubScene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -58,11 +62,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.Light;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -85,6 +91,7 @@ import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 
 public class QDsimple_main_FXMLDocumentController implements Initializable {
     
@@ -198,22 +205,30 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private Button rotate_y_button;
     @FXML
     private Button choose_image_button;
-
+    @FXML
+    private Button connect_button;
+    @FXML
+    private MenuItem save_image_mi;
+   
     
-        
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Dynamically change window size whenever window size is changed
+        
         stackpane_dialog_w = StackPane_Dialog.widthProperty().doubleValue();
         stackpane_dialog_h = StackPane_Dialog.heightProperty().doubleValue();
         window_resize_listener_f();
        
        subscene = new SubScene(group, center_pane.getWidth(), center_pane.getHeight(), true, SceneAntialiasing.BALANCED);
-       //subscene.setStyle("-fx-background-color: black;");
-       
-       subscene.autosize();
+       center_pane.setStyle("-fx-background-color: white;");
        center_pane.setDepthTest(DepthTest.ENABLE);
+       //subscene.autosize();
+       //subscene.setDepthTest(DepthTest.ENABLE);
        center_pane.getChildren().add(subscene);
+       
+      
+       delete_shape_button.setTooltip(new Tooltip("Delete Shape"));
+
        
        init_colors();
        initMouseControl(group,subscene);
@@ -228,14 +243,14 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     void init_colors()
     {
         //Initiallizing colors
-       blueMaterial.setDiffuseColor(Color.LIGHTBLUE);  //GaAs
-       blueMaterial.setSpecularColor(Color.BLUE);
+       blueMaterial.setDiffuseColor(Color.BLUE);  //GaAs
+       blueMaterial.setSpecularColor(Color.DARKBLUE);
        
-       redMaterial.setDiffuseColor(Color.CRIMSON);      //Si
-       redMaterial.setSpecularColor(Color.RED);
+       redMaterial.setDiffuseColor(Color.RED);      //Si
+       redMaterial.setSpecularColor(Color.CRIMSON);
        
-       greenMaterial.setDiffuseColor(Color.LIGHTGREEN);  //P
-       greenMaterial.setSpecularColor(Color.GREEN);
+       greenMaterial.setDiffuseColor(Color.GREEN);  //P
+       greenMaterial.setSpecularColor(Color.CHARTREUSE);
        
        brownMaterial.setDiffuseColor(Color.BROWN);     //AlGaAs
        brownMaterial.setSpecularColor(Color.SIENNA);
@@ -316,9 +331,9 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     
     private void buildAxes() {
         
-        final Box xAxis = new Box(subscene.getHeight()/15, 1, 1);
-        final Box yAxis = new Box(1,subscene.getHeight()/15 , 1);
-        final Box zAxis = new Box(1, 1,subscene.getHeight()/15);
+        Box xAxis = new Box(subscene.getHeight()/25, 1, 1);
+        Box yAxis = new Box(1,subscene.getHeight()/25 , 1);
+        Box zAxis = new Box(1, 1,subscene.getHeight()/25);
         
         xAxis.setMaterial(redMaterial);
         yAxis.setMaterial(greenMaterial);
@@ -414,29 +429,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             double z=Double.parseDouble(depth_tf.getText());
             
             box_property_change(id,x,y,z,color,mat_type,dop,mat);
-           
-            //calling connect_box & passsing parameters 
-            
-            String str1 = shape_list_cb.getValue(); 
-            String str2 = plane_list_cb.getValue();
-            
-            if(str1.equals("None") || str2.equals("None"))
-            {
-                
-            }
-            else
-            {
-                String[] temp;
-                temp = str1.split("_");
-                int box_two=Integer.parseInt(temp[1]);
-                if(id!=box_two)
-                {
-                    int index= plane_list_cb.getSelectionModel().getSelectedIndex();
-                    connect_box(id,box_two,index);
-                }
-                
-            }
-                       
+                               
         }
         else if(tempArray[0].equals("cylinder"))
         {
@@ -533,11 +526,115 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         
         
     }
+    @FXML
+    private void connect_button_clicked(MouseEvent event) 
+    {
+        get_selected_shape();
+        String str1 = shape_list_cb.getValue(); 
+        String str2 = plane_list_cb.getValue();
+            
+        if(str1.equals("None") || str2.equals("None"))
+        {
+
+        }
+        else
+        {
+            String[] temp;
+            temp = str1.split("_");
+            int box_two=Integer.parseInt(temp[1]);
+            if(selected_shape_id!=box_two)
+            {
+                int index= plane_list_cb.getSelectionModel().getSelectedIndex();
+                connect_box(selected_shape_id,box_two,index);
+            }
+
+        }
+    }
+    
+    void connect_box(int n, int m,int side_no)              // n= box no which is to be connected , m= box no where it will connect
+    {
+        
+        double offset_x=box[m].getHeight();
+        double offset_y=box[m].getWidth();
+        double offset_z=box[m].getDepth();
+        
+        
+        
+        if( side_no==1)
+        {
+            box[n].setLayoutX(box[m].getLayoutX());
+            box[n].setLayoutY(box[m].getLayoutY());
+            box[n].setTranslateZ(box[m].getTranslateZ()+offset_z);
+            /*
+            box[n].translateXProperty().set(box[m].getTranslateX());
+            box[n].translateYProperty().set(box[m].getTranslateY());
+            box[n].translateZProperty().set(box[m].getTranslateZ()+offset_z);
+            */
+        }
+        else if( side_no==2)
+        {
+            box[n].setLayoutX(box[m].getLayoutX());
+            box[n].setLayoutY(box[m].getLayoutY());
+            box[n].setTranslateZ(box[m].getTranslateZ()-offset_z);
+        }
+        else if( side_no==3)
+        {
+            box[n].setLayoutX(box[m].getLayoutX()+offset_x);
+            box[n].setLayoutY(box[m].getLayoutY());
+            box[n].setTranslateZ(box[m].getTranslateZ());
+        }
+        else if( side_no==4)
+        {
+            box[n].setLayoutX(box[m].getLayoutX()-offset_x);
+            box[n].setLayoutY(box[m].getLayoutY());
+            box[n].setTranslateZ(box[m].getTranslateZ());
+        }
+        else if( side_no==5)
+        {
+            box[n].setLayoutX(box[m].getLayoutX());
+            box[n].setLayoutY(box[m].getLayoutY()+offset_y);
+            box[n].setTranslateZ(box[m].getTranslateZ());
+        }
+        else if( side_no==6)
+        {
+            box[n].setLayoutX(box[m].getLayoutX());
+            box[n].setLayoutY(box[m].getLayoutY()-offset_y);
+            box[n].setTranslateZ(box[m].getTranslateZ());
+        }
+               
+    }
+    
     
     Timer timer;
     TimerTask task; 
     int counter=0;
     int i=0;
+
+    @FXML
+    private void save_image_clicked(ActionEvent event) 
+    {
+        FileChooser fileChooser = new FileChooser();
+
+        //Set extension filter
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png files (*.png)", "*.png"));
+
+        //Prompt user to select a file
+        File file = fileChooser.showSaveDialog(null);
+
+        if(file != null){
+            try {
+                //Pad the capture area
+                WritableImage writableImage = new WritableImage((int)center_pane.getWidth() + 20,
+                        (int)center_pane.getHeight() + 20);
+                center_pane.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+                //Write the snapshot to the chosen file
+                ImageIO.write(renderedImage, "png", file);
+            } catch (IOException ex) { ex.printStackTrace(); }
+        }
+    }
+
+    
     
 
     
@@ -575,7 +672,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                 }
                 else if(axis_no==2)
                 {
-                    if (this.rotate)
+                   if (this.rotate)
                    {
                       box[id].translateYProperty().set(box[id].getTranslateY() + offset);
                    }
@@ -616,7 +713,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                     }
                    else
                     {
-                        cylinder[id].setRotationAxis(Rotate.Y_AXIS);
+                        cylinder[id].setRotationAxis(Rotate.Z_AXIS);
                         cylinder[id].rotateProperty().set(cylinder[id].getRotate()+offset);
                     }
                    
@@ -653,7 +750,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                     }
                     else
                     {
-                        sphere[id].setRotationAxis(Rotate.Y_AXIS);
+                        sphere[id].setRotationAxis(Rotate.Z_AXIS);
                         sphere[id].rotateProperty().set(sphere[id].getRotate()+offset);
                     } 
                      
@@ -675,7 +772,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(-5,2,true);
+            task=new MyTimerTask(-1,2,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -697,7 +794,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(-5,1,true);
+            task=new MyTimerTask(-1,1,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -720,7 +817,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(5,2,true);
+            task=new MyTimerTask(1,2,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -739,7 +836,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(5,1,true);
+            task=new MyTimerTask(1,1,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -759,7 +856,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(5,3,true);
+            task=new MyTimerTask(1,3,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -779,7 +876,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if (counter==0)
         {
             timer= new Timer();
-            task=new MyTimerTask(-5,3,true);
+            task=new MyTimerTask(-1,3,true);
             timer.scheduleAtFixedRate(task, 0, 100);
             counter++;
         }
@@ -795,15 +892,32 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     @FXML
     private void rorate_x_button_pressed(MouseEvent event) 
     {
-        if (counter==0)
+        if(event.isPrimaryButtonDown())
         {
-            timer= new Timer();
-            task=new MyTimerTask(5,1,false);
-            timer.scheduleAtFixedRate(task, 0, 100);
-            counter++;
+            if (counter==0)
+                {
+                    timer= new Timer();
+                    task=new MyTimerTask(2,1,false);
+                    timer.scheduleAtFixedRate(task, 0, 100);
+                    counter++;
+
+                }
+        }
+        if(event.isSecondaryButtonDown())
+        {
+            if (counter==0)
+                {
+                    timer= new Timer();
+                    task=new MyTimerTask(-2,1,false);
+                    timer.scheduleAtFixedRate(task, 0, 100);
+                    counter++;
+
+                }
         }
         
-    }
+     }
+        
+    
  
     @FXML
     private void rotate_x_button_released(MouseEvent event) 
@@ -817,13 +931,28 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     @FXML
     private void rotate_y_button_pressed(MouseEvent event) 
     {
-        if (counter==0)
+        if(event.isPrimaryButtonDown())
         {
-            timer= new Timer();
-            task=new MyTimerTask(5,2,false);
-            timer.scheduleAtFixedRate(task, 0, 100);
-            counter++;
+            if (counter==0)
+            {
+                timer= new Timer();
+                task=new MyTimerTask(2,2,false);
+                timer.scheduleAtFixedRate(task, 0, 100);
+                counter++;
+            }
         }
+        if(event.isSecondaryButtonDown())
+        {
+            if (counter==0)
+            {
+                timer= new Timer();
+                task=new MyTimerTask(-2,2,false);
+                timer.scheduleAtFixedRate(task, 0, 100);
+                counter++;
+            }
+        }
+        
+        
     }
 
     
@@ -910,13 +1039,19 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         box[box_no]= new SmartBox(box_no,50,50,50);
         
         box[box_no].setMaterial(blueMaterial);
-        
-        //box[box_no].setOnMousePressed(pressMouse());
-        //box[box_no].setOnMouseDragged(dragMouse());
-        
+       
         box[box_no].setOnMouseClicked((MouseEvent me) -> {
             
             set_shape_property(me);
+        });
+        
+        box[box_no].setOnMousePressed((MouseEvent me) -> {
+            
+            press_mouse(me);
+        });
+        box[box_no].setOnMouseDragged((MouseEvent me) -> {
+            
+            drag_mouse(me);
         });
         
         shape_list_cb.getItems().addAll("box_"+box_no);
@@ -945,55 +1080,6 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                  
     }
     
-    void connect_box(int n, int m,int side_no)              // n= box no which is to be connected , m= box no where it will connect
-    {
-        
-        double offset_x=box[m].getHeight();
-        double offset_y=box[m].getWidth();
-        double offset_z=box[m].getDepth();
-        
-        
-        
-        if( side_no==1)
-        {
-            box[n].translateXProperty().set(box[m].getTranslateX());
-            box[n].translateYProperty().set(box[m].getTranslateY());
-            box[n].translateZProperty().set(box[m].getTranslateZ()+offset_z);
-        }
-        else if( side_no==2)
-        {
-            box[n].translateXProperty().set(box[m].getTranslateX());
-            box[n].translateYProperty().set(box[m].getTranslateY());
-            box[n].translateZProperty().set(box[m].getTranslateZ()-offset_z);
-        }
-        else if( side_no==3)
-        {
-            box[n].translateXProperty().set(box[m].getTranslateX()+offset_x);
-            box[n].translateYProperty().set(box[m].getTranslateY());
-            box[n].translateZProperty().set(box[m].getTranslateZ());
-        }
-        else if( side_no==4)
-        {
-            box[n].translateXProperty().set(box[m].getTranslateX()-offset_x);
-            box[n].translateYProperty().set(box[m].getTranslateY());
-            box[n].translateZProperty().set(box[m].getTranslateZ());
-        }
-        else if( side_no==5)
-        {
-            box[n].translateXProperty().set(box[m].getTranslateX());
-            box[n].translateYProperty().set(box[m].getTranslateY()+offset_y);
-            box[n].translateZProperty().set(box[m].getTranslateZ());
-        }
-        else if( side_no==6)
-        {
-            box[n].translateXProperty().set(box[m].getTranslateX());
-            box[n].translateYProperty().set(box[m].getTranslateY()- offset_y);
-            box[n].translateZProperty().set(box[m].getTranslateZ());
-        }
-        
-        
-        
-    }
     
     class SmartCylinder extends Cylinder
     {
@@ -1053,6 +1139,15 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         cylinder[cylinder_no].setOnMouseClicked((MouseEvent me) -> 
         {
             set_shape_property(me);
+        });
+        
+        cylinder[cylinder_no].setOnMousePressed((MouseEvent me) -> 
+        {
+            press_mouse(me);
+        });
+        cylinder[cylinder_no].setOnMouseDragged((MouseEvent me) -> 
+        {
+            drag_mouse(me);
         });
        
         
@@ -1131,6 +1226,15 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             set_shape_property(me);
         });
         
+        sphere[sphere_no].setOnMousePressed((MouseEvent me) -> 
+        {
+            press_mouse(me);
+        });
+        sphere[sphere_no].setOnMouseDragged((MouseEvent me) -> 
+        {
+            drag_mouse(me);
+        });
+        
         group.getChildren().add(sphere[sphere_no]);
         subscene.setRoot(group);
        
@@ -1181,13 +1285,18 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private void new_project_clicked(ActionEvent event) 
     {
         group.getChildren().clear();
+        group.getTransforms().clear();
+      
         subscene.setRoot(group);
-        buildAxes();
-        camera_set();
+        initMouseControl(group,subscene);
         init_shapes();
+        camera_set();
+        buildAxes();         
         shape_list_cb.getItems().clear();
         shape_list_cb.getItems().add("None");
         shape_list_cb.getSelectionModel().select("None");
+       
+        
         
     }
     
@@ -1211,19 +1320,30 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         xRotate.angleProperty().bind(angleX);
         yRotate.angleProperty().bind(angleY);
 
-        subscene.setOnMousePressed(event -> {
-          anchorX = event.getSceneX();
-          anchorY = event.getSceneY();
-          anchorAngleX = angleX.get();
-          anchorAngleY = angleY.get();
+        center_pane.setOnMousePressed(event -> 
+        {
+            if(event.isSecondaryButtonDown())
+            {
+                anchorX = event.getSceneX();
+                anchorY = event.getSceneY();
+                anchorAngleX = angleX.get();
+                anchorAngleY = angleY.get();
+            }
+            
+          
         });
 
-        subscene.setOnMouseDragged(event -> {
-          angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
-          angleY.set(anchorAngleY + anchorX - event.getSceneX());
+        center_pane.setOnMouseDragged(event -> 
+        {
+            if(event.isSecondaryButtonDown())
+            {
+              angleX.set(anchorAngleX - (anchorY - event.getSceneY()));
+              angleY.set(anchorAngleY + anchorX - event.getSceneX());   
+            }
+            
         });
         
-        subscene.addEventHandler(ScrollEvent.SCROLL, event -> {
+        center_pane.addEventHandler(ScrollEvent.SCROLL, event -> {
         //Get how much scroll was done in Y axis.
 	double delta = event.getDeltaY();
         //Add it to the Z-axis location.
@@ -1240,16 +1360,18 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
 
             if (event.getSource() instanceof SmartBox) 
             { 
-                SmartBox selected_box = (SmartBox) event.getSource();
-                int id=selected_box.id;
-                shape_id_tf.setText("box_"+id);
-                height_tf.setText(Double.toString(box[id].getHeight()));
-                width_tf.setText(Double.toString(box[id].getWidth()));
-                depth_tf.setText(Double.toString(box[id].getDepth()));
                 radius_tf.setEditable(false);
                 height_tf.setEditable(true);
                 width_tf.setEditable(true);
                 depth_tf.setEditable(true);
+                SmartBox selected_box = (SmartBox) event.getSource();
+                int id=selected_box.id;
+                shape_id_tf.setText("box_"+id);
+            
+                height_tf.setText(Double.toString(box[id].getHeight()));
+                width_tf.setText(Double.toString(box[id].getWidth()));
+                depth_tf.setText(Double.toString(box[id].getDepth()));
+                
                 material_cb.getSelectionModel().select(box[id].material);
                 doping_cb.getSelectionModel().select(box[id].doping);
                 material_type_cb.getSelectionModel().select(box[id].material_type);
@@ -1334,12 +1456,12 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         else if(type.equals("cylinder"))
         {
             group.getChildren().remove(cylinder[id]);
-            box[id]=null;
+            cylinder[id]=null;
         }
         else if(type.equals("sphere"))
         {
             group.getChildren().remove(sphere[id]);
-            box[id]=null;
+            sphere[id]=null;
         }
         
         subscene.setRoot(group);
@@ -1350,108 +1472,89 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
 
     
     
-    /*
+    
     private double m_nX = 0;
     private double m_nY = 0;
     private double m_nMouseX = 0;
     private double m_nMouseY = 0;
-
-
-    private EventHandler<MouseEvent> pressMouse() 
+   
+    public void press_mouse(MouseEvent event) 
     {
-	EventHandler<MouseEvent> mousePressHandler = new EventHandler<MouseEvent>() 
-        {
-            public void handle(MouseEvent event) 
-            {
-		if (event.getButton() == MouseButton.PRIMARY) 
-                {
-                    // get the current mouse coordinates according to the scene.
-                    m_nMouseX = event.getSceneX();
-                    m_nMouseY = event.getSceneY();
-                                    
-                    // get the current coordinates of the draggable node.
-                    if (event.getSource() instanceof SmartBox) 
-                    { 
-                        SmartBox box = (SmartBox) event.getSource();
-                        m_nX = box.getLayoutX();
-			m_nY = box.getLayoutY();
-                        
-                    }
-                    else if (event.getSource() instanceof SmartCylinder) 
-                    { 
-                        SmartCylinder cylinder = (SmartCylinder) event.getSource();
-                        m_nX = cylinder.getLayoutX();
-			m_nY = cylinder.getLayoutY();
-                        
-                    }
-                    else if (event.getSource() instanceof SmartSphere) 
-                    { 
-                        SmartSphere sphere = (SmartSphere) event.getSource();
-                        m_nX = sphere.getLayoutX();
-			m_nY = sphere.getLayoutY();
-                        
-                    }
-					
-		}
-            }
-	};
+        // get the current mouse coordinates according to the scene.
+        m_nMouseX = event.getSceneX();
+        m_nMouseY = event.getSceneY();
+                    
+        // get the current coordinates of the draggable node.
+        if (event.getSource() instanceof SmartBox) 
+        { 
+            SmartBox s_box = (SmartBox) event.getSource();
+            m_nX = s_box.getLayoutX();
+            m_nY = s_box.getLayoutY();
 
-	return mousePressHandler;
+        }
+        else if (event.getSource() instanceof SmartCylinder) 
+        { 
+            SmartCylinder cylinder = (SmartCylinder) event.getSource();
+            m_nX = cylinder.getLayoutX();
+            m_nY = cylinder.getLayoutY();
+
+        }
+        else if (event.getSource() instanceof SmartSphere) 
+        { 
+            SmartSphere sphere = (SmartSphere) event.getSource();
+            m_nX = sphere.getLayoutX();
+            m_nY = sphere.getLayoutY();
+
+        }
+
+
     }
-    
-    private EventHandler<MouseEvent> dragMouse() 
+
+    public void drag_mouse(MouseEvent event)
     {
-	EventHandler<MouseEvent> dragHandler = new EventHandler<MouseEvent>() 
-        {
 
-            public void handle(MouseEvent event)
-            {
-		if (event.getButton() == MouseButton.PRIMARY) 
-                {
-                    // find the delta coordinates by subtracting the new mouse
-                    // coordinates with the old.
-                    double deltaX = event.getSceneX() - m_nMouseX;
-                    double deltaY = event.getSceneY() - m_nMouseY;
+        // find the delta coordinates by subtracting the new mouse
+        // coordinates with the old.
+        double deltaX = event.getSceneX() - m_nMouseX;
+        double deltaY = event.getSceneY() - m_nMouseY;
 
-                    // add the delta coordinates to the node coordinates.
-                    m_nX += deltaX;
-                    m_nY += deltaY;
-                    
-                    if (event.getSource() instanceof SmartBox) 
-                    { 
-                        SmartBox box= (SmartBox) event.getSource();
-                        box.setLayoutX(m_nX);
-                        box.setLayoutY(m_nY);
-                         
-                    }
-                    else if (event.getSource() instanceof SmartCylinder) 
-                    { 
-                        SmartCylinder cylinder= (SmartCylinder) event.getSource();
-                        cylinder.setLayoutX(m_nX);
-                        cylinder.setLayoutY(m_nY);
-                         
-                    }
-                    else if (event.getSource() instanceof SmartSphere) 
-                    { 
-                        SmartSphere sphere= (SmartSphere) event.getSource();
-                        sphere.setLayoutX(m_nX);
-                        sphere.setLayoutY(m_nY);
-                         
-                    }
-                    // set the layout for the draggable node.
-                    
+        // add the delta coordinates to the node coordinates.
+        m_nX += deltaX;
+        m_nY += deltaY;
 
-                    // get the latest mouse coordinate.
-                    m_nMouseX = event.getSceneX();
-                    m_nMouseY = event.getSceneY();
+        if (event.getSource() instanceof SmartBox) 
+        { 
+            SmartBox s_box= (SmartBox) event.getSource();
+            s_box.setLayoutX(m_nX);
+            s_box.setLayoutY(m_nY);
 
-		}
-            }
-	};
-	return dragHandler;
+        }
+        else if (event.getSource() instanceof SmartCylinder) 
+        { 
+            SmartCylinder cylinder= (SmartCylinder) event.getSource();
+            cylinder.setLayoutX(m_nX);
+            cylinder.setLayoutY(m_nY);
+
+        }
+        else if (event.getSource() instanceof SmartSphere) 
+        { 
+            SmartSphere sphere= (SmartSphere) event.getSource();
+            sphere.setLayoutX(m_nX);
+            sphere.setLayoutY(m_nY);
+
+        }
+        // set the layout for the draggable node.
+
+
+        // get the latest mouse coordinate.
+        m_nMouseX = event.getSceneX();
+        m_nMouseY = event.getSceneY();
+
+
     }
+
     
-    */
+    
     
     
     
