@@ -1,16 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXCheckBox?>
-<?import com.jfoenix.controls.JFXColorPicker?>
-<?import com.jfoenix.controls.JFXComboBox?>
 <?import com.jfoenix.controls.JFXTabPane?>
-<?import com.jfoenix.controls.JFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.effect.DropShadow?>
@@ -60,7 +57,7 @@
                   </Menu>
                   <Menu mnemonicParsing="false">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#display_device_coordinates_f" text="Display Coordinates" />
+                        <MenuItem mnemonicParsing="false" onAction="#save_structure_file_f" text="Save Structure File" />
                      </items>
                      <graphic>
                         <Label text="Operations" textFill="WHITE">
@@ -91,7 +88,7 @@
          <left>
             <AnchorPane fx:id="anchorpaneleft_borderpane_main" prefHeight="200.0" prefWidth="234.0" style="-fx-background-color: #e4ffe6;" BorderPane.alignment="TOP_LEFT">
                <children>
-                  <Label prefHeight="38.0" prefWidth="220.0" text="Device Components" textFill="#22805d" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                  <Label prefHeight="38.0" prefWidth="220.0" text="Add Device Components" textFill="#22805d" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
                      <font>
                         <Font name="Roboto Medium" size="18.0" />
                      </font>
@@ -109,7 +106,7 @@
                      <tabs>
                         <Tab>
                            <graphic>
-                              <Label text="Cuboids" textFill="WHITE">
+                              <Label text="Regions" textFill="WHITE">
                                  <font>
                                     <Font name="Segoe UI Semibold" size="14.0" />
                                  </font></Label>
@@ -156,14 +153,58 @@
                         </Tab>
                         <Tab>
                            <graphic>
-                              <Label text="Miscellaneous" textFill="WHITE">
+                              <Label text="Top Gates" textFill="WHITE">
                                  <font>
                                     <Font name="Segoe UI Semibold" size="14.0" />
                                  </font>
                               </Label>
                            </graphic>
                            <content>
-                              <FlowPane prefHeight="200.0" prefWidth="200.0" />
+                              <FlowPane hgap="10.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0">
+                                 <padding>
+                                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                 </padding>
+                                 <children>
+                                    <JFXButton fx:id="btn_topgate_circle" buttonType="RAISED" disable="true" onAction="#activated_topgate_circle" prefHeight="60.0" prefWidth="60.0" ripplerFill="#3f9a15" style="-fx-background-image: url('/images/circ.png'); -fx-background-position: center; -fx-background-radius: 5; -fx-background-repeat: no-repeat;">
+                                       <FlowPane.margin>
+                                          <Insets left="5.0" top="10.0" />
+                                       </FlowPane.margin>
+                                    </JFXButton>
+                                    <JFXButton fx:id="btn_topgate_rectangle" buttonType="RAISED" disable="true" onAction="#activated_topgate_rectangle" prefHeight="60.0" prefWidth="60.0" ripplerFill="#3f9a15" style="-fx-background-image: url('/images/rect.png'); -fx-background-position: center; -fx-background-radius: 5; -fx-background-repeat: no-repeat;">
+                                       <FlowPane.margin>
+                                          <Insets top="10.0" />
+                                       </FlowPane.margin>
+                                    </JFXButton>
+                                    <JFXButton fx:id="btn_topgate_polygon" buttonType="RAISED" disable="true" onAction="#activated_topgate_polygon" prefHeight="60.0" prefWidth="60.0" ripplerFill="#3f9a15" style="-fx-background-image: url('/images/poly.png'); -fx-background-position: center; -fx-background-radius: 5; -fx-background-repeat: no-repeat;">
+                                       <FlowPane.margin>
+                                          <Insets top="10.0" />
+                                       </FlowPane.margin>
+                                    </JFXButton>
+                                    <Label fx:id="label_topgate_circle" disable="true" text="Circle" textFill="#1170a4">
+                                       <font>
+                                          <Font name="Roboto Black" size="12.0" />
+                                       </font>
+                                       <FlowPane.margin>
+                                          <Insets left="18.0" />
+                                       </FlowPane.margin>
+                                    </Label>
+                                    <Label fx:id="label_topgate_rectangle" disable="true" text="Rectangle" textFill="#1170a4">
+                                       <font>
+                                          <Font name="Roboto Black" size="12.0" />
+                                       </font>
+                                       <FlowPane.margin>
+                                          <Insets left="18.0" />
+                                       </FlowPane.margin>
+                                    </Label>
+                                    <Label fx:id="label_topgate_polygon" disable="true" text="Polygon" textFill="#1170a4">
+                                       <font>
+                                          <Font name="Roboto Black" size="12.0" />
+                                       </font>
+                                       <FlowPane.margin>
+                                          <Insets left="10.0" />
+                                       </FlowPane.margin>
+                                    </Label>
+                                 </children></FlowPane>
                            </content>
                         </Tab>
                      </tabs>
@@ -180,7 +221,16 @@
                   <DropShadow />
                </effect>
                <children>
-                  <Label fx:id="label_anchorpaneright_borderpane_main" prefHeight="45.0" prefWidth="234.0" style="-fx-border-color: #00897b; -fx-border-width: 0 0 4 0;" text="Set Component Properties" textFill="#1e7252">
+                  <ScrollPane fx:id="scrollpane_anchorpaneright_borderpane_main" layoutY="43.0" prefHeight="617.0" prefWidth="233.0" style="-fx-focus-color: transparent;">
+                     <content>
+                        <VBox fx:id="vbox_scrollpane" fillWidth="false" prefHeight="615.0" prefWidth="231.0" spacing="10.0" style="-fx-background-color: #b0bec5;">
+                           <padding>
+                              <Insets top="10.0" />
+                           </padding>
+                        </VBox>
+                     </content>
+                  </ScrollPane>
+                  <Label fx:id="label_1" layoutX="13.0" prefHeight="45.0" prefWidth="196.0" style="-fx-border-color: #00897b; -fx-border-width: 0 0 4 0;" text="  Set Region Properties" textFill="#1e7252">
                      <font>
                         <Font name="Roboto Medium" size="18.0" />
                      </font>
@@ -190,93 +240,7 @@
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
-                     <padding>
-                        <Insets left="10.0" />
-                     </padding>
                   </Label>
-                  <VBox fx:id="vbox_anchorpaneright_borderpane_main" layoutY="38.0" prefHeight="623.0" prefWidth="234.0" spacing="10.0">
-                     <children>
-                        <JFXTextField fx:id="textfield_component_label" focusColor="#00897b" labelFloat="true" prefHeight="25.0" prefWidth="198.0" promptText="Enter Component Label (i.e. Shape_1)" unFocusColor="#006064">
-                           <font>
-                              <Font name="Roboto Light" size="12.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="10.0" top="25.0" />
-                           </VBox.margin>
-                        </JFXTextField>
-                        <JFXTextField fx:id="textfield_height" focusColor="#00897b" labelFloat="true" prefHeight="25.0" prefWidth="198.0" promptText="Enter Height (1nm - 1000nm)" unFocusColor="#006064">
-                           <VBox.margin>
-                              <Insets left="10.0" right="10.0" top="15.0" />
-                           </VBox.margin>
-                           <font>
-                              <Font name="Roboto Light" size="12.0" />
-                           </font>
-                        </JFXTextField>
-                        <JFXTextField fx:id="textfield_width" focusColor="#00897b" labelFloat="true" prefHeight="25.0" prefWidth="198.0" promptText="Enter Width (1nm - 1000nm)" unFocusColor="#006064">
-                           <font>
-                              <Font name="Roboto Light" size="12.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="10.0" right="10.0" top="15.0" />
-                           </VBox.margin>
-                        </JFXTextField>
-                        <JFXTextField fx:id="textfield_depth" focusColor="#00897b" labelFloat="true" prefHeight="25.0" prefWidth="198.0" promptText="Enter Depth (1nm - 1000nm)" unFocusColor="#006064">
-                           <font>
-                              <Font name="Roboto Light" size="12.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="10.0" right="10.0" top="15.0" />
-                           </VBox.margin>
-                        </JFXTextField>
-                        <JFXComboBox fx:id="combobox_material" focusColor="#00897b" labelFloat="true" promptText="Select Material Type" unFocusColor="#006064" visibleRowCount="5">
-                           <VBox.margin>
-                              <Insets left="10.0" top="15.0" />
-                           </VBox.margin>
-                        </JFXComboBox>
-                        <Label text="Select Material Color" textFill="#006064">
-                           <font>
-                              <Font name="Roboto" size="12.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
-                           </VBox.margin>
-                        </Label>
-                        <JFXColorPicker fx:id="color_picker">
-                           <VBox.margin>
-                              <Insets left="10.0" top="-5.0" />
-                           </VBox.margin>
-                        </JFXColorPicker>
-                        <JFXComboBox fx:id="combobox_material_stack" disable="true" focusColor="#00897b" labelFloat="true" promptText="Select Component Orientation" unFocusColor="#006064" visible="false" visibleRowCount="5">
-                           <VBox.margin>
-                              <Insets left="10.0" top="15.0" />
-                           </VBox.margin>
-                        </JFXComboBox>
-                        <JFXCheckBox fx:id="checkbox_layout_restrict" checkedColor="#00897b" disable="true" prefHeight="41.0" prefWidth="175.0" text="Restrict Layout-Bounds to&#10;Selected Component" textFill="#e44040" unCheckedColor="#006064" visible="false">
-                           <VBox.margin>
-                              <Insets left="10.0" />
-                           </VBox.margin>
-                           <font>
-                              <Font name="Roboto Light" size="11.0" />
-                           </font>
-                        </JFXCheckBox>
-                        <JFXButton fx:id="okay_button" buttonType="RAISED" disable="true" onAction="#activated_confirm_add_f" prefHeight="33.0" prefWidth="67.0" ripplerFill="WHITE" style="-fx-background-color: #66bb6a;" text="Okay" textFill="WHITE">
-                           <font>
-                              <Font name="Roboto Medium" size="12.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="10.0" top="70.0" />
-                           </VBox.margin>
-                        </JFXButton>
-                        <JFXButton fx:id="cancel_button" buttonType="RAISED" disable="true" onAction="#activated_cancel_f" prefHeight="33.0" prefWidth="67.0" ripplerFill="WHITE" style="-fx-background-color: #ef5350;" text="Cancel" textFill="WHITE">
-                           <font>
-                              <Font name="Roboto Medium" size="12.0" />
-                           </font>
-                           <VBox.margin>
-                              <Insets left="10.0" top="10.0" />
-                           </VBox.margin>
-                        </JFXButton>
-                     </children>
-                  </VBox>
                </children></AnchorPane>
          </right>
          <center>
@@ -301,7 +265,7 @@
                               <Insets top="-75.0" />
                            </VBox.margin>
                         </Label>
-                        <JFXButton buttonType="RAISED" onAction="#activated_newworkspace_file_menubar_borderpane_main_f" prefHeight="45.0" prefWidth="264.0" ripplerFill="#4e89bc" style="-fx-background-color: #80deea; -fx-background-radius: 10;" text="Create new workspace" textFill="WHITE">
+                        <JFXButton buttonType="RAISED" onAction="#activated_newworkspace_file_menubar_borderpane_main_f" prefHeight="45.0" prefWidth="264.0" ripplerFill="#4e8aba" style="-fx-background-color: #80deea; -fx-background-radius: 10;" text="Create new workspace" textFill="WHITE">
                            <font>
                               <Font name="Roboto Medium" size="18.0" />
                            </font>

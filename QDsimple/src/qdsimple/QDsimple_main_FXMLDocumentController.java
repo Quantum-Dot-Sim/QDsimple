@@ -28,13 +28,20 @@ import com.jfoenix.controls.JFXCheckBox;
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.JFXToggleButton;
 import com.jfoenix.controls.events.JFXDialogEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
+import java.util.stream.IntStream;
 import javafx.util.Duration;
 import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Camera;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -43,6 +50,7 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.InputEvent;
@@ -53,11 +61,14 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Box;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Cylinder;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Scale;
 import javafx.scene.transform.Translate;
+import javafx.stage.FileChooser;
 
 public class QDsimple_main_FXMLDocumentController implements Initializable {
     
@@ -77,6 +88,10 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     @FXML
     private AnchorPane anchorpaneright_borderpane_main;
     @FXML
+    private ScrollPane scrollpane_anchorpaneright_borderpane_main;
+    @FXML
+    private VBox vbox_scrollpane;
+    @FXML
     private VBox vbox_anchorpanecenter_borderpane_main;
     @FXML
     private MenuItem newworkspace_file_menubar_borderpane_main;
@@ -91,14 +106,6 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     @FXML
     private HBox hboxleft_anchorpanedown_borderpane_main;
     @FXML
-    private JFXTextField textfield_height;
-    @FXML
-    private JFXTextField textfield_width;
-    @FXML
-    private JFXTextField textfield_depth;  
-    @FXML
-    private JFXColorPicker color_picker;
-    @FXML
     private JFXButton btn_base;
     @FXML
     private Label label_base;
@@ -107,28 +114,19 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     @FXML
     private Label label_stack;
     @FXML
-    private JFXComboBox<String> combobox_material_stack;
+    private JFXButton btn_topgate_circle;
     @FXML
-    private JFXComboBox<String> combobox_material;
+    private JFXButton btn_topgate_rectangle;
     @FXML
-    private VBox vbox_anchorpaneright_borderpane_main;
+    private JFXButton btn_topgate_polygon;
+    @FXML
+    private Label label_topgate_circle;
+    @FXML
+    private Label label_topgate_rectangle;
+    @FXML
+    private Label label_topgate_polygon;
     @FXML
     private Label label_message;
-    @FXML
-    private JFXButton cancel_button;
-    @FXML
-    private JFXButton okay_button;
-    @FXML
-    private Label label_anchorpaneright_borderpane_main;
-    @FXML
-    private JFXTextField textfield_component_label;
-    @FXML
-    private JFXCheckBox checkbox_layout_restrict;
-    // FXML Variables
-    // *************************************************************************************************
-    
-    // Primitive Variables
-    // *************************************************************************************************
     Camera cam;
     double stackpane_main_h;
     double stackpane_main_w;
@@ -148,6 +146,10 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     static String addon_orientation = "";
     double boundary_proximity_limit = 0.01;
     double projection_transparency = 0.8;
+    
+    String text_style = "-fx-font-family: Roboto; -fx-font-size: 12; -fx-font-weight: lighter;"
+                      + "-jfx-focus-color: #00897b; -jfx-unfocus-color: #006064; -jfx-label-float: true;";
+    
     // *************************************************************************************************
     // Primitive Variables
     
@@ -155,31 +157,94 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     
     
+    // Dynamic Variables
     // *************************************************************************************************
-    // Initializer functions
-    private void resize_listener_f() {
-        // Dynamically change window size whenever window size is changed  
-        
-        stackpane_main.widthProperty().addListener((obs, oldVal, newVal) ->{
-            stackpane_main_w = newVal.doubleValue();
-            borderpane_main.setPrefWidth(stackpane_main_w);
-        });
-        stackpane_main.heightProperty().addListener((obs, oldVal, newVal) ->{
-            stackpane_main_h = newVal.doubleValue();
-            borderpane_main.setPrefHeight(stackpane_main_h);
-        });
-    }
+    public JFXTextField textfield_1 = new JFXTextField(); 
+    public JFXTextField textfield_2 = new JFXTextField(); 
+    public JFXTextField textfield_3 = new JFXTextField();
+    public JFXTextField textfield_4 = new JFXTextField();
+    public JFXTextField textfield_5 = new JFXTextField();
+    public JFXTextField textfield_6 = new JFXTextField();
+    public JFXTextField textfield_7 = new JFXTextField();
+    public JFXTextField textfield_8 = new JFXTextField();
+    public JFXTextField textfield_9 = new JFXTextField();
+    public JFXComboBox<String> combobox_1 = new JFXComboBox();
+    public JFXComboBox<String> combobox_2 = new JFXComboBox();
+    public JFXColorPicker color_picker = new JFXColorPicker();
+    public JFXCheckBox checkbox_1 = new JFXCheckBox();
+    public Label label_1;
+    public JFXToggleButton toggle_1 = new JFXToggleButton();
     
-    private void translator_f() {
-        // Pre-translate various containers for transitioning later when action has been made
-        anchorpaneleft_borderpane_main.setTranslateX( -(anchorpaneleft_borderpane_main.getPrefWidth()));
-        anchorpaneright_borderpane_main.setTranslateX(anchorpaneright_borderpane_main.getPrefWidth());
-    }
-    // Initializer functions
-    // *************************************************************************************************  
+    // *************************************************************************************************
+    // Dynamic Variables
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    
     
     // *************************************************************************************************
     // Action oriented functions
+    private void gate_move_f(Node node, boolean b){
+        //Omnidirectional Rotation of the entire subscene
+        t  = new Translate();
+        p  = new Translate();
+        ip = new Translate();
+        Rotate rx = new Rotate();
+        rx.setAxis(Rotate.X_AXIS); 
+        Rotate ry = new Rotate();
+        ry.setAxis(Rotate.Y_AXIS);
+        Rotate rz = new Rotate();
+        rz.setAxis(Rotate.Z_AXIS);
+        Scale n = new Scale();
+        
+        node.getTransforms().addAll(t, p, rx, rz, ry, n, ip);
+        
+        stackpane_main.addEventHandler(MouseEvent.ANY, event -> {
+            mousePosX = event.getX();
+            mousePosY = event.getY();
+        });
+        
+        if(b == true){
+            stackpane_main.setOnMouseDragged((MouseEvent me) -> {
+                
+                // Get orientation value
+                addon_orientation = combobox_2.getValue();
+                
+                mouseOldX = mousePosX;
+                mouseOldY = mousePosY;
+                mousePosX = me.getX();
+                mousePosY = me.getY();
+                mouseDeltaX = mousePosX - mouseOldX;
+                mouseDeltaY = mousePosY - mouseOldY;
+                
+                if(addon_orientation == "Up" || addon_orientation == "Down"){
+                    
+                    if (me.isAltDown() && me.isPrimaryButtonDown()) {
+                        rz.setAngle(rz.getAngle() - mouseDeltaX);
+                    }
+                    else if (me.isPrimaryButtonDown()) {
+                        t.setX(t.getX() + mouseDeltaX);
+                        t.setY(t.getY() - mouseDeltaY);
+                    }
+                }
+                
+                if(addon_orientation == "Left" || addon_orientation == "Right"){
+                    
+                }
+                
+                if(addon_orientation == "Front" || addon_orientation == "Back"){
+                    
+                }
+            });
+        }
+        else{
+            stackpane_main.setOnScroll(null);
+            stackpane_main.setOnMouseDragged(null);
+            stackpane_main.removeEventHandler(MouseEvent.ANY, event -> {});
+        }
+    }
+    
+    
     private void shape_move_f(Node box, boolean b){
         
         //Omnidirectional Rotation of the entire subscene
@@ -205,8 +270,8 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             stackpane_main.setOnMouseDragged((MouseEvent me) -> {
                 
                 // Get orientation value
-                if(combobox_material_stack.isDisabled()) addon_orientation = "Any";
-                else addon_orientation = combobox_material_stack.getValue();
+                if(combobox_2.getValue() == null) addon_orientation = "Any";
+                else addon_orientation = combobox_2.getValue();
                 
                 mouseOldX = mousePosX;
                 mouseOldY = mousePosY;
@@ -225,7 +290,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         // If new shape is equal or smaller than selected shape
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() >= group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getWidth()){
                             t.setX(t.getX() + mouseDeltaX);
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() > group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()){
                                     t.setX(t.getX() + Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()));
                                 }
@@ -244,7 +309,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         }
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() >= group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getDepth()){
                             t.setZ(t.getZ() - (orient_inversion * mouseDeltaY));
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() > group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()){
                                     t.setZ(t.getZ() + Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()));
                                 }
@@ -265,7 +330,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         // If new shape is larger than selected shape...
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() < group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getWidth()){
                             t.setX(t.getX() + mouseDeltaX);
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                  if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() < group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()){
                                     t.setX(t.getX() - Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()));
                                 }
@@ -284,7 +349,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         }
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() < group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getDepth()){
                             t.setZ(t.getZ() - (orient_inversion * mouseDeltaY));
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() < group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()){
                                     t.setZ(t.getZ() - Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()));
                                 }
@@ -314,7 +379,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         // If new shape is equal or smaller than selected shape
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() >= group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getHeight()){
                             t.setY(t.getY() + mouseDeltaY);
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() > group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()){
                                     t.setY(t.getY() + Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()));
                                 }
@@ -333,7 +398,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         }
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() >= group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getDepth()){
                             t.setZ(t.getZ() - (orient_inversion * mouseDeltaX));
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() > group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()){
                                     t.setZ(t.getZ() + Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()));
                                 }
@@ -354,7 +419,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         // If new shape is larger than selected shape...
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() < group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getHeight()){
                             t.setY(t.getY() + mouseDeltaY);
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() < group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()){
                                     t.setY(t.getY() - Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()));
                                 }
@@ -373,7 +438,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         }
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() < group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getDepth()){
                             t.setZ(t.getZ() - (orient_inversion * mouseDeltaX));
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() < group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()){
                                     t.setZ(t.getZ() - Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinZ() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()));
                                 }
@@ -403,7 +468,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         // If new shape is equal or smaller than selected shape
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() >= group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getHeight()){
                             t.setY(t.getY() + mouseDeltaY);
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() > group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()){
                                     t.setY(t.getY() + Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()));
                                 }
@@ -422,7 +487,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         }
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() >= group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getWidth()){
                             t.setX(t.getX() + (orient_inversion * mouseDeltaX));
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() > group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()){
                                     t.setX(t.getX() + Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()));
                                 }
@@ -443,7 +508,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         // If new shape is larger than selected shape...
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() < group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getHeight()){
                             t.setY(t.getY() + mouseDeltaY);
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                 if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() < group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()){
                                     t.setY(t.getY() - Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY()));
                                 }
@@ -462,7 +527,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                         }
                         if(group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() < group_device.getChildren().get(group_device.getChildren().size() - 1).getLayoutBounds().getWidth()){
                             t.setX(t.getX() + (orient_inversion * mouseDeltaX));
-                            if(checkbox_layout_restrict.isSelected()){
+                            if(checkbox_1.isSelected()){
                                  if(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() < group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()){
                                     t.setX(t.getX() - Math.abs(group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinX() - group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX()));
                                 }
@@ -492,8 +557,8 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             
             stackpane_main.setOnScroll((ScrollEvent me) -> {
                 // Get orientation value
-                if(combobox_material_stack.isDisabled()) addon_orientation = "Any";
-                else addon_orientation = combobox_material_stack.getValue();
+                if(combobox_2.isDisabled()) addon_orientation = "Any";
+                else addon_orientation = combobox_2.getValue();
                 
                 mouseOldX = mousePosX;
                 mouseOldY = mousePosY;
@@ -717,6 +782,8 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     @FXML
     private void activated_create_base_f(ActionEvent event) {
         
+        base_material_property_input_init();
+        
         // Transition in right anchor pane
         Timeline t = new Timeline();
         
@@ -742,23 +809,16 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             shape_move_f(new_b, true);
             
             stackpane_main.addEventHandler(InputEvent.ANY, in_event -> {
-                if(!textfield_width.getText().isEmpty() && !textfield_height.getText().isEmpty() && !textfield_depth.getText().isEmpty()){
-                    // Enabling buttons for functions
-                    okay_button.setDisable(false);
-                    cancel_button.setDisable(false);
+                if(!textfield_3.getText().isEmpty() && !textfield_2.getText().isEmpty() && !textfield_4.getText().isEmpty()){
 
                     // Set values
                     box_col.setDiffuseColor(Color.web(color_picker.getValue().toString(), projection_transparency));
-                    new_b.setWidth(Double.parseDouble(textfield_width.getText()));
-                    new_b.setHeight(Double.parseDouble(textfield_height.getText()));
-                    new_b.setDepth(Double.parseDouble(textfield_depth.getText()));
+                    new_b.setWidth(Double.parseDouble(textfield_3.getText()));
+                    new_b.setHeight(Double.parseDouble(textfield_2.getText()));
+                    new_b.setDepth(Double.parseDouble(textfield_4.getText()));
                     new_b.setMaterial(box_col);
                 }
                 else{
-                    // Disabling buttons for functions
-                    okay_button.setDisable(true);
-                    cancel_button.setDisable(true);
-
                     // Reset values
                     box_col.setDiffuseColor(null);
                     new_b.setWidth(0);
@@ -808,6 +868,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             pick_material_dialog.show();
         }
         else{
+            stack_material_property_input_init();
             group_device.setOnMousePressed(null);
             // Transition in right anchor pane
             Timeline t = new Timeline();
@@ -827,12 +888,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
             new_b.setMaterial(box_col);
             new_b.getTransforms().addAll(group_device.getChildren().get(selected_shape_index).getLocalToParentTransform());
             
-            if(anchorpaneright_borderpane_main.getTranslateX() != 0.0){
-                combobox_material_stack.setDisable(false);
-                combobox_material_stack.setVisible(true);
-                checkbox_layout_restrict.setDisable(false);
-                checkbox_layout_restrict.setVisible(true);
-                
+            if(anchorpaneright_borderpane_main.getTranslateX() != 0.0){               
                 // Stack shape
                 group_device.getChildren().add(new_b);
                 // Disabling maneuverability of ALL shapes
@@ -840,42 +896,36 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                 shape_move_f(new_b, true);
 
                 stackpane_main.addEventHandler(InputEvent.ANY, in_event -> {
-                    if(!textfield_width.getText().isEmpty() && !textfield_height.getText().isEmpty() && !textfield_depth.getText().isEmpty() && combobox_material_stack.getValue() != null){
-                        // Enabling buttons for functions
-                        okay_button.setDisable(false);
-                        cancel_button.setDisable(false);
+                    if(!textfield_3.getText().isEmpty() && !textfield_2.getText().isEmpty() && !textfield_4.getText().isEmpty() && combobox_2.getValue() != null){
                         
                         // Set values
                         box_col.setDiffuseColor(Color.web(color_picker.getValue().toString(), projection_transparency));
-                        new_b.setWidth(Double.parseDouble(textfield_width.getText()));
-                        new_b.setHeight(Double.parseDouble(textfield_height.getText()));
-                        new_b.setDepth(Double.parseDouble(textfield_depth.getText()));
+                        new_b.setWidth(Double.parseDouble(textfield_3.getText()));
+                        new_b.setHeight(Double.parseDouble(textfield_2.getText()));
+                        new_b.setDepth(Double.parseDouble(textfield_4.getText()));
                         new_b.setMaterial(box_col);
                         
                         // Adjust translation
-                        if(combobox_material_stack.getValue() == "Up" && selected_shape_index!= -1){
+                        if(combobox_2.getValue() == "Up" && selected_shape_index!= -1){
                             new_b.setTranslateY(- boundary_proximity_limit - ((new_b.getHeight() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() / 2.0)));
                         }
-                        else if(combobox_material_stack.getValue() == "Down" && selected_shape_index!= -1){
+                        else if(combobox_2.getValue() == "Down" && selected_shape_index!= -1){
                             new_b.setTranslateY(boundary_proximity_limit + ((new_b.getHeight() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() / 2.0)));
                         }
-                        else if(combobox_material_stack.getValue() == "Left" && selected_shape_index!= -1){
+                        else if(combobox_2.getValue() == "Left" && selected_shape_index!= -1){
                             new_b.setTranslateX(- boundary_proximity_limit - ((new_b.getWidth() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() / 2.0)));
                         }
-                        else if(combobox_material_stack.getValue() == "Right" && selected_shape_index!= -1){
+                        else if(combobox_2.getValue() == "Right" && selected_shape_index!= -1){
                             new_b.setTranslateX(boundary_proximity_limit + ((new_b.getWidth() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() / 2.0)));
                         }
-                        else if(combobox_material_stack.getValue() == "Front" && selected_shape_index!= -1){
+                        else if(combobox_2.getValue() == "Front" && selected_shape_index!= -1){
                             new_b.setTranslateZ( - boundary_proximity_limit - ((new_b.getDepth() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() / 2.0)));
                         }
-                        else if(combobox_material_stack.getValue() == "Back" && selected_shape_index!= -1){
+                        else if(combobox_2.getValue() == "Back" && selected_shape_index!= -1){
                             new_b.setTranslateZ( boundary_proximity_limit + ((new_b.getDepth() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() / 2.0)));
                         }
                     }
                     else{
-                        // Disabling buttons for functions
-                        okay_button.setDisable(true);
-                        cancel_button.setDisable(true);
 
                         // Reset values
                         box_col.setDiffuseColor(null);
@@ -886,12 +936,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                     }  
                 });
             }
-            else{
-                combobox_material_stack.setDisable(true);
-                combobox_material_stack.setVisible(false);
-                checkbox_layout_restrict.setDisable(true);
-                checkbox_layout_restrict.setVisible(false);
-                
+            else{            
                 group_device.getChildren().remove(group_device.getChildren().size() - 1);
                 stackpane_main.removeEventHandler(InputEvent.ANY, in_event -> {});
                 // Disabling maneuverability of ALL shapes
@@ -904,20 +949,293 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     }
     
     @FXML
-    private void activated_confirm_add_f(ActionEvent event) {
+    private void activated_topgate_circle(ActionEvent event) {
+        
+        group_device.setOnMousePressed((MouseEvent me) -> {
+            // Select the ID of the shape clicked upon
+            selected_shape_index = group_device.getChildren().indexOf(me.getTarget());
+            label_message.setText("Selected Shape ID: " + selected_shape_index);
+            activated_topgate_circle(event);
+        });
+        
+        
+        if(selected_shape_index == -1){
+            JFXDialogLayout pick_material = new JFXDialogLayout();
+            pick_material.setHeading(new ImageView("/images/pick_shape.png"));
+            Text t = new Text("Please click on a component to select where the new layer will stack.");
+            t.setStyle("-fx-font-family: Roboto; -fx-font-size: 15px;");
+            pick_material.setBody(t);
+
+            JFXDialog pick_material_dialog = new JFXDialog(stackpane_main, pick_material, JFXDialog.DialogTransition.BOTTOM);
+            JFXButton pick_material_button = new JFXButton("Okay");
+            pick_material_button.setStyle(" -fx-background-color: #00838f; -fx-text-fill: white; ");
+
+            pick_material_button.setOnAction((ActionEvent event1) -> {
+                pick_material_dialog.close();
+            });
+
+            // set the contents within and display
+            pick_material.setActions(pick_material_button);
+            pick_material_dialog.show();
+        }
+        else{
+            group_device.setOnMousePressed(null);
+            // Transition in right anchor pane
+            Timeline t = new Timeline();
+
+            // Translate right anchorpane
+            KeyValue kv_anchorpaneright_borderpane_main = (anchorpaneright_borderpane_main.getTranslateX() != 0.0) 
+                                                       ? new KeyValue(anchorpaneright_borderpane_main.translateXProperty(), anchorpaneright_borderpane_main.getTranslateX() - anchorpaneleft_borderpane_main.getPrefWidth(), Interpolator.EASE_OUT)
+                                                       : new KeyValue(anchorpaneright_borderpane_main.translateXProperty(), anchorpaneright_borderpane_main.getTranslateX() + anchorpaneright_borderpane_main.getPrefWidth(), Interpolator.EASE_IN);
+            KeyFrame kf_anchorpaneright_borderpane_main = new KeyFrame(Duration.millis(250), kv_anchorpaneright_borderpane_main);
+
+            t.getKeyFrames().addAll(kf_anchorpaneright_borderpane_main);
+            t.play();
+            
+            // Set default values to box
+            Circle new_b = new Circle(0, 0, 0);
+            //new_b.getTransforms().addAll(group_device.getChildren().get(selected_shape_index).getLocalToParentTransform());
+            
+            if(anchorpaneright_borderpane_main.getTranslateX() != 0.0){
+                combobox_2.setDisable(false);
+                combobox_2.setVisible(true);
+                checkbox_1.setDisable(false);
+                checkbox_1.setVisible(true);
+                
+                // Stack shape
+                group_device.getChildren().add(new_b);
+                // Disabling maneuverability of ALL shapes
+                omnidirectional_move_f(group_main, false);
+                gate_move_f(new_b, true);
+
+                stackpane_main.addEventHandler(InputEvent.ANY, in_event -> {
+                    if(!textfield_3.getText().isEmpty() && combobox_2.getValue() != null){
+                        
+                        // Set values
+                        new_b.setRadius(Double.parseDouble(textfield_3.getText()));
+                        new_b.setFill(color_picker.getValue());
+                        
+                        
+                        // Adjust translation
+                        if(combobox_2.getValue() == "Up" && selected_shape_index!= -1){
+                            new_b.setRotationAxis(Rotate.X_AXIS);
+                            new_b.setRotate(90);
+                            new_b.setTranslateY(- boundary_proximity_limit  + group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY());
+                        }
+//                        else if(combobox_2.getValue() == "Down" && selected_shape_index!= -1){
+//                            new_b.setTranslateY(boundary_proximity_limit + ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Left" && selected_shape_index!= -1){
+//                            new_b.setTranslateX(- boundary_proximity_limit - ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Right" && selected_shape_index!= -1){
+//                            new_b.setTranslateX(boundary_proximity_limit + ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Front" && selected_shape_index!= -1){
+//                            new_b.setTranslateZ( - boundary_proximity_limit - ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Back" && selected_shape_index!= -1){
+//                            new_b.setTranslateZ( boundary_proximity_limit + ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() / 2.0)));
+//                        }
+                    }
+                    else{
+
+                        // Reset values
+                        new_b.setRadius(0);
+                        new_b.setFill(null);
+                    }  
+                });
+            }
+            else{
+                combobox_2.setDisable(true);
+                combobox_2.setVisible(false);
+                checkbox_1.setDisable(true);
+                checkbox_1.setVisible(false);
+                
+                group_device.getChildren().remove(group_device.getChildren().size() - 1);
+                stackpane_main.removeEventHandler(InputEvent.ANY, in_event -> {});
+                // Disabling maneuverability of ALL shapes
+                selected_shape_index = -1;
+                label_message.setText("");
+                gate_move_f(new_b, false);
+                omnidirectional_move_f(group_main, true);
+            }
+        }
+    }
+
+    @FXML
+    private void activated_topgate_rectangle(ActionEvent event) {
+        group_device.setOnMousePressed((MouseEvent me) -> {
+            // Select the ID of the shape clicked upon
+            selected_shape_index = group_device.getChildren().indexOf(me.getTarget());
+            label_message.setText("Selected Shape ID: " + selected_shape_index);
+            activated_topgate_rectangle(event);
+        });
+        
+        
+        if(selected_shape_index == -1){
+            JFXDialogLayout pick_material = new JFXDialogLayout();
+            pick_material.setHeading(new ImageView("/images/pick_shape.png"));
+            Text t = new Text("Please click on a component to select where the new layer will stack.");
+            t.setStyle("-fx-font-family: Roboto; -fx-font-size: 15px;");
+            pick_material.setBody(t);
+
+            JFXDialog pick_material_dialog = new JFXDialog(stackpane_main, pick_material, JFXDialog.DialogTransition.BOTTOM);
+            JFXButton pick_material_button = new JFXButton("Okay");
+            pick_material_button.setStyle(" -fx-background-color: #00838f; -fx-text-fill: white; ");
+
+            pick_material_button.setOnAction((ActionEvent event1) -> {
+                pick_material_dialog.close();
+            });
+
+            // set the contents within and display
+            pick_material.setActions(pick_material_button);
+            pick_material_dialog.show();
+        }
+        else{
+            group_device.setOnMousePressed(null);
+            // Transition in right anchor pane
+            Timeline t = new Timeline();
+
+            // Translate right anchorpane
+            KeyValue kv_anchorpaneright_borderpane_main = (anchorpaneright_borderpane_main.getTranslateX() != 0.0) 
+                                                       ? new KeyValue(anchorpaneright_borderpane_main.translateXProperty(), anchorpaneright_borderpane_main.getTranslateX() - anchorpaneleft_borderpane_main.getPrefWidth(), Interpolator.EASE_OUT)
+                                                       : new KeyValue(anchorpaneright_borderpane_main.translateXProperty(), anchorpaneright_borderpane_main.getTranslateX() + anchorpaneright_borderpane_main.getPrefWidth(), Interpolator.EASE_IN);
+            KeyFrame kf_anchorpaneright_borderpane_main = new KeyFrame(Duration.millis(250), kv_anchorpaneright_borderpane_main);
+
+            t.getKeyFrames().addAll(kf_anchorpaneright_borderpane_main);
+            t.play();
+            
+            // Set default values to box
+            Rectangle new_b = new Rectangle(0, 0, 0, 0);
+            new_b.getTransforms().addAll(group_device.getChildren().get(selected_shape_index).getLocalToParentTransform());
+            
+            if(anchorpaneright_borderpane_main.getTranslateX() != 0.0){
+                combobox_2.setDisable(false);
+                combobox_2.setVisible(true);
+                checkbox_1.setDisable(false);
+                checkbox_1.setVisible(true);
+                
+                // Stack shape
+                group_device.getChildren().add(new_b);
+                // Disabling maneuverability of ALL shapes
+                omnidirectional_move_f(group_main, false);
+                gate_move_f(new_b, true);
+
+                stackpane_main.addEventHandler(InputEvent.ANY, in_event -> {
+                    if(!textfield_3.getText().isEmpty() && !textfield_2.getText().isEmpty() && combobox_2.getValue() != null){
+                        
+                        // Set values
+                        new_b.setHeight(Double.parseDouble(textfield_2.getText()));
+                        new_b.setWidth(Double.parseDouble(textfield_2.getText()));
+                        new_b.setFill(color_picker.getValue());
+                        
+                        // Adjust translation
+                        if(combobox_2.getValue() == "Up" && selected_shape_index!= -1){
+                            new_b.setRotationAxis(Rotate.X_AXIS);
+                            new_b.setRotate(90);
+                            new_b.setTranslateY(- boundary_proximity_limit  + (group_device.getChildren().get(selected_shape_index).getBoundsInParent().getMinY() - new_b.getBoundsInParent().getMaxY()));
+                        }
+//                        else if(combobox_2.getValue() == "Down" && selected_shape_index!= -1){
+//                            new_b.setTranslateY(boundary_proximity_limit + ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getHeight() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Left" && selected_shape_index!= -1){
+//                            new_b.setTranslateX(- boundary_proximity_limit - ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Right" && selected_shape_index!= -1){
+//                            new_b.setTranslateX(boundary_proximity_limit + ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getWidth() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Front" && selected_shape_index!= -1){
+//                            new_b.setTranslateZ( - boundary_proximity_limit - ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() / 2.0)));
+//                        }
+//                        else if(combobox_2.getValue() == "Back" && selected_shape_index!= -1){
+//                            new_b.setTranslateZ( boundary_proximity_limit + ((new_b.getRadius() / 2.0) + (group_device.getChildren().get(selected_shape_index).getLayoutBounds().getDepth() / 2.0)));
+//                        }
+                    }
+                    else{
+
+                        // Reset values
+                        new_b.setHeight(0);
+                        new_b.setWidth(0);
+                        new_b.setFill(null);
+                    }  
+                });
+            }
+            else{
+                combobox_2.setDisable(true);
+                combobox_2.setVisible(false);
+                checkbox_1.setDisable(true);
+                checkbox_1.setVisible(false);
+                
+                group_device.getChildren().remove(group_device.getChildren().size() - 1);
+                stackpane_main.removeEventHandler(InputEvent.ANY, in_event -> {});
+                // Disabling maneuverability of ALL shapes
+                selected_shape_index = -1;
+                label_message.setText("");
+                gate_move_f(new_b, false);
+                omnidirectional_move_f(group_main, true);
+            }
+        }
+    }
+
+    @FXML
+    private void activated_topgate_polygon(ActionEvent event) {
+        
+    }
+    
+    private void confirmed_add_base_f(ActionEvent event) {
         // Create Layer
         PhongMaterial box_col = new PhongMaterial();
         box_col.setDiffuseColor(Color.web(color_picker.getValue().toString()));
-        Box new_b = new Box(Double.parseDouble(textfield_width.getText()), Double.parseDouble(textfield_height.getText()), Double.parseDouble(textfield_depth.getText()));
+        Box new_b = new Box(Double.parseDouble(textfield_3.getText()), Double.parseDouble(textfield_2.getText()), Double.parseDouble(textfield_4.getText()));
+        new_b.setMaterial(box_col);
+        new_b.getTransforms().addAll(group_device.getChildren().get(group_device.getChildren().size() - 1).getLocalToParentTransform());
+
+        // Remove projected shapes
+        activated_cancel_f(event);
+        
+        group_device.getChildren().add(new_b);
+        
+        // Save shape property
+        DecimalFormat df2 = new DecimalFormat("#.##");
+        
+        String DOTin = "Material\n\t{\n\t\tname = " + combobox_1.getValue() + "\n\t\ttag = " + textfield_1.getText() + "\n\t\tx = " + textfield_5.getText()
+                           + "\n\t\tcrystal_structure = " + textfield_6.getText() + "\n\t\tdoping type = " + toggle_1.getText() + "\n\t\tdoping_density = " + textfield_7.getText()
+                           + "\n\t\tdoping_ionization_model = " + textfield_8.getText() + "\n\t}";
+        DOTin += "\n ~Region\n\t\t{\n\t\t\tshape = cuboid\n\t\t\tregion_number = " + (group_device.getChildren().size() - 1) + "\n\t\t\t"
+                   + "priority = " + (group_device.getChildren().size() - 1) + "\n\t\t\tmin = (" + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMinX())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMinY())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMinZ()) + ")\n\t\t\t"
+                   + "max = (" + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()) + ")\n\t\t}";
+        
+        group_device.getChildren().get(group_device.getChildren().size() - 1).setUserData(DOTin);
+        
+        // Disable add base option
+        btn_base.setDisable(true);
+        label_base.setDisable(true);
+        btn_stack.setDisable(false);
+        label_stack.setDisable(false);
+        btn_topgate_circle.setDisable(false);
+        label_topgate_circle.setDisable(false);
+        btn_topgate_rectangle.setDisable(false);
+        label_topgate_rectangle.setDisable(false);
+        btn_topgate_polygon.setDisable(false);
+        label_topgate_polygon.setDisable(false);
+    }
+    
+    private void confirmed_stack_f(ActionEvent event) {
+        // Create Layer
+        PhongMaterial box_col = new PhongMaterial();
+        box_col.setDiffuseColor(Color.web(color_picker.getValue().toString()));
+        Box new_b = new Box(Double.parseDouble(textfield_3.getText()), Double.parseDouble(textfield_2.getText()), Double.parseDouble(textfield_4.getText()));
         new_b.setMaterial(box_col);
         new_b.getTransforms().addAll(group_device.getChildren().get(group_device.getChildren().size() - 1).getLocalToParentTransform());
         
         // Ensure Physical Bound validity
         boolean b = true;
-        if(group_device.getChildren().size() == 1){
-            b = true;
-        }
-        else if(group_device.getChildren().size() > 1){
+        if(group_device.getChildren().size() > 1){
             double shape_old_minX = 0;
             double shape_old_minY = 0;
             double shape_old_minZ = 0;
@@ -953,26 +1271,28 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
                 }
             }
         }
-        else{
-            b = false;
-        }
         
         // Remove projected shapes
         activated_cancel_f(event);
 
         if(b){
-            if(btn_base.isDisable() == false){
-                group_device.getChildren().add(new_b);
-                
-                // Disable add base option
-                btn_base.setDisable(true);
-                label_base.setDisable(true);
-                btn_stack.setDisable(false);
-                label_stack.setDisable(false);
-            }
-            else{
-                group_device.getChildren().add(new_b);
-            }
+            group_device.getChildren().add(new_b);
+            
+            // Save shape property
+            DecimalFormat df2 = new DecimalFormat("#.##");
+
+            String DOTin = "Material\n\t{\n\t\tname = " + combobox_1.getValue() + "\n\t\ttag = " + textfield_1.getText() + "\n\t\tx = " + textfield_5.getText()
+                           + "\n\t\tcrystal_structure = " + textfield_6.getText() + "\n\t\tdoping type = " + toggle_1.getText() + "\n\t\tdoping_density = " + textfield_7.getText()
+                           + "\n\t\tdoping_ionization_model = " + textfield_8.getText() + "\n\t}";
+            DOTin += "\n ~Region\n\t\t{\n\t\t\tshape = cuboid\n\t\t\tregion_number = " + (group_device.getChildren().size() - 1) + "\n\t\t\t"
+                   + "priority = " + (group_device.getChildren().size() - 1) + "\n\t\t\tmin = (" + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMinX())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMinY())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMinZ()) + ")\n\t\t\t"
+                   + "max = (" + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxX())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxY())
+                   + ", " + df2.format(group_device.getChildren().get(group_device.getChildren().size() - 1).getBoundsInParent().getMaxZ()) + ")\n\t\t}";
+
+            group_device.getChildren().get(group_device.getChildren().size() - 1).setUserData(DOTin);
         }
         else{
             JFXDialogLayout boundary_violation = new JFXDialogLayout();
@@ -995,7 +1315,6 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         }
     }
     
-    @FXML
     private void activated_cancel_f(ActionEvent event) {
         //Resetting variables
         selected_shape_index = -1;
@@ -1006,6 +1325,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         omnidirectional_move_f(group_main, true);
         
         // Removing projections
+        //if(group_device.getChildren().get(group_device.getChildren().size() - 1).getClass().toString().equals("class javafx.scene.shape.Box")){
         group_device.getChildren().remove(group_device.getChildren().size() - 1);
         
         // Transition in right anchor pane
@@ -1022,32 +1342,69 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     }
     
     @FXML
-    private void display_device_coordinates_f(ActionEvent event) {
-        JFXDialogLayout device_coordinates = new JFXDialogLayout();
-        device_coordinates.setHeading(new ImageView("/images/device_coordinate.png"));
+    private void save_structure_file_f(ActionEvent event) {
         Text t = new Text();
         
-        String d_c_s = "";
-        for(int i = 0; i < group_device.getChildren().size(); i++){
-            d_c_s += "Material index (" + (i + 1) + "): " + group_device.getChildren().get(i).getBoundsInParent() + "\n";
+        String struct = "Structure\n{";
+        String geometry = "\n\tGeometry\n\t{";
+        int k = 0, l = 0;
+        int[] dupe_check = new int[group_device.getChildren().size()];
+        //initialize array with invalid values
+        for(int f = 0; f <= l; f++){
+            dupe_check[f] = -1;
         }
-        
-        t.setText(d_c_s);
-        
-        t.setStyle("-fx-font-family: Roboto; -fx-font-size: 10px; -fx-text-fill: #616161;");
-        device_coordinates.setBody(t);
+        // To identify similar regions
+        String r = "\tregions = (";
+        for(int i = 0; i < group_device.getChildren().size(); i++){
+            for(k = 0; k < group_device.getChildren().get(i).getUserData().toString().length(); k++){
+                if(group_device.getChildren().get(i).getUserData().toString().charAt(k) == '~'){
+                    k++;
+                    break;
+                }
+            }
+            for(int j = i; j < group_device.getChildren().size(); j++){
+                if(group_device.getChildren().get(i).getUserData().toString().substring(0, k-2).equals(group_device.getChildren().get(j).getUserData().toString().substring(0, k-2))){
+                    boolean b = false;
+                    for(int f = 0; f <= l; f++){
+                        if(j == dupe_check[f]){
+                            b = true; 
+                            break;
+                        }
+                    }
+                    if(b == false){
+                        dupe_check[l] = j;
+                        l++;
+                        r += j + ", ";
+                    }
+                }
+                if(j == group_device.getChildren().size()- 1){
+                    if(r.charAt(r.length()-1) == ' '){
+                        struct += "\n\n\t" + group_device.getChildren().get(i).getUserData().toString().substring(0, k-4) + r.substring(0, r.length()-2) + ")\n\t";
+                    }
+                    r = "\tregions = (";
+                }
+            }
+            geometry += "\n\n\t\t" + group_device.getChildren().get(i).getUserData().toString().substring(k, group_device.getChildren().get(i).getUserData().toString().length());
+        }
+        struct += "}\n" + geometry + "\n\n\t}\n\n}";
+        FileChooser fileChooser = new FileChooser();
+ 
+        //Set extension filter for text files
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Structure File (*.in)", "*.in");
+        fileChooser.getExtensionFilters().add(extFilter);
 
-        JFXDialog device_coordinates_dialog = new JFXDialog(stackpane_main, device_coordinates, JFXDialog.DialogTransition.CENTER);
-        JFXButton device_coordinates_button = new JFXButton("Okay");
-        device_coordinates_button.setStyle(" -fx-background-color: #00838f; -fx-text-fill: white; ");
+        //Show save file dialog
+        File file = fileChooser.showSaveDialog(stackpane_main.getScene().getWindow());
+        if (file != null) {
+            try {
+                PrintWriter writer;
+                writer = new PrintWriter(file);
+                writer.print(struct);
+                writer.close();
+            } catch (IOException ex) {
 
-        device_coordinates_button.setOnAction((ActionEvent event1) -> {
-            device_coordinates_dialog.close();
-        });
-
-        // set the contents within and display
-        device_coordinates.setActions(device_coordinates_button);
-        device_coordinates_dialog.show();
+            }
+        }
     }
     
     // Action oriented functions
@@ -1061,25 +1418,293 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Initializer function & variable calls
         resize_listener_f();
-        translator_f();
-        
-        // Populating JFXComboBox material type
-        combobox_material.getItems().add("Si");
-        combobox_material.getItems().add("Ge");
-        combobox_material.getItems().add("Al");
-        combobox_material.getItems().add("SiGe");
-        combobox_material.getItems().add("GaAs");
-        combobox_material.getItems().add("AL2O3");
-        combobox_material.getItems().add("SiO2");
-        
-        // Populating JFXComboBox material orientation
-        combobox_material_stack.getItems().add("Up");
-        combobox_material_stack.getItems().add("Down"); 
-        combobox_material_stack.getItems().add("Left");
-        combobox_material_stack.getItems().add("Right"); 
-        combobox_material_stack.getItems().add("Front");
-        combobox_material_stack.getItems().add("Back");
+        translator_f();  
     }
+    // Main functions
+    // ************************************************************************************************* 
+    
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+    // *************************************************************************************************
+    // Initializer functions
+    private void base_material_property_input_init(){
+        // Material Visual Parameters
+        Label l_1 = new Label("Set Visual Parameters");
+        l_1.setStyle("-fx-font-family: Roboto; -fx-font-size: 15; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 0px 0px 2px 0px;");
+        l_1.setTextFill(Color.web("#00897b"));
+        // Material Tag
+        textfield_1.setStyle(text_style);
+        textfield_1.setPromptText("Tag");
+        textfield_1.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Populating JFXComboBox material type
+        combobox_1.getItems().clear();
+        combobox_1.setStyle(text_style);
+        combobox_1.setPromptText("Material Type");
+        combobox_1.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        combobox_1.getItems().add("Si");
+        combobox_1.getItems().add("Ge");
+        combobox_1.getItems().add("Al");
+        combobox_1.getItems().add("SiGe");
+        combobox_1.getItems().add("GaAs");
+        combobox_1.getItems().add("AL2O3");
+        combobox_1.getItems().add("SiO2");
+        // Material Width
+        textfield_2.setStyle(text_style);
+        textfield_2.setPromptText("Height (i.e. 1nm - 1000nm)");
+        textfield_2.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Height
+        textfield_3.setStyle(text_style);
+        textfield_3.setPromptText("Width (i.e. 1nm - 1000nm)");
+        textfield_3.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Depth
+        textfield_4.setStyle(text_style);
+        textfield_4.setPromptText("Depth (i.e. 1nm - 1000nm)");
+        textfield_4.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Color
+        Label l_2 = new Label("Material Color");
+        l_2.setStyle(text_style);
+        l_2.setTextFill(Color.web("#00897b"));
+        color_picker.setTranslateY(-10);
+        // Material Physical Parameters
+        Label l_3 = new Label("Set Physical Parameters");
+        l_3.setStyle("-fx-font-family: Roboto; -fx-font-size: 15; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 0px 0px 2px 0px;");
+        l_3.setTextFill(Color.web("#00897b"));
+        // Material Band Gap
+        textfield_5.setStyle(text_style);
+        textfield_5.setPromptText("Band Gap");
+        textfield_5.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Crystal Structure
+        textfield_6.setStyle(text_style);
+        textfield_6.setPromptText("Crystal Structure");
+        textfield_6.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Doping Type
+        Label l_4 = new Label("Doping Type");
+        l_4.setStyle(text_style);
+        l_4.setTextFill(Color.web("#00897b"));
+        toggle_1.setStyle(text_style);
+        toggle_1.setText("P");
+        toggle_1.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(toggle_1.getText() == "P") toggle_1.setText("N");
+            else toggle_1.setText("P");
+        }));
+        toggle_1.setPadding(new Insets(-30, 0, -20, -5));
+        // Material Doping Density
+        textfield_7.setStyle(text_style);
+        textfield_7.setPromptText("Doping Density");
+        textfield_7.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Doping Ionization Model
+        textfield_8.setStyle(text_style);
+        textfield_8.setPromptText("Doping Ionization Model");
+        textfield_8.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Okay Button
+        JFXButton okay_button = new JFXButton("Okay");
+        okay_button.setStyle("-fx-background-color: #558b2f; -jfx-button-type: RAISED; -fx-text-fill: #ffffff; -fx-background-radius: 10px;");
+        okay_button.setRipplerFill(Color.web("#ffffff"));
+        okay_button.setMinSize(75, 25);
+        okay_button.setTranslateY(20);
+        okay_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent event) {
+                if(!textfield_1.getText().isEmpty() && combobox_1.getValue() != null && !textfield_2.getText().isEmpty() && !textfield_3.getText().isEmpty() &&
+                    !textfield_4.getText().isEmpty() && !textfield_5.getText().isEmpty() && !textfield_6.getText().isEmpty() && !textfield_7.getText().isEmpty() &&
+                    !textfield_8.getText().isEmpty()){
+                    confirmed_add_base_f(event);
+                }
+                else{
+                    JFXDialogLayout input_empty = new JFXDialogLayout();
+                    input_empty.setHeading(new ImageView("/images/empty.png"));
+                    Text t = new Text("Some of the required text fields are empty.\nPlease fill them out accordingly.");
+                    t.setStyle("-fx-font-family: Roboto; -fx-font-size: 15px; -fx-text-fill: #c62828;");
+                    input_empty.setBody(t);
+
+                    JFXDialog input_empty_dialog = new JFXDialog(stackpane_main, input_empty, JFXDialog.DialogTransition.BOTTOM);
+                    JFXButton input_empty_button = new JFXButton("Okay");
+                    input_empty_button.setStyle(" -fx-background-color: #00838f; -fx-text-fill: white; ");
+
+                    input_empty_button.setOnAction((ActionEvent event1) -> {
+                        input_empty_dialog.close();
+                    });
+
+                    // set the contents within and display
+                    input_empty.setActions(input_empty_button);
+                    input_empty_dialog.show();
+                }
+            }
+        });
+        // Cancel Button
+        JFXButton cancel_button = new JFXButton("Cancel");
+        cancel_button.setStyle("-fx-background-color: #f44336; -jfx-button-type: RAISED; -fx-text-fill: #ffffff; -fx-background-radius: 10px;");
+        cancel_button.setRipplerFill(Color.web("#ffffff"));
+        cancel_button.setMinSize(75, 25);
+        cancel_button.setTranslateY(20);
+        cancel_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent event) {
+                activated_cancel_f(event);
+            }
+        });
+
+        vbox_scrollpane.setSpacing(20);
+        vbox_scrollpane.setPadding(new Insets(20, 0, 40, 12));
+        vbox_scrollpane.getChildren().clear();
+        vbox_scrollpane.getChildren().addAll(l_1, textfield_1, combobox_1, textfield_2, textfield_3, textfield_4, l_2,
+                                            color_picker, l_3, textfield_5, textfield_6, l_4, toggle_1,  textfield_7, textfield_8, okay_button, cancel_button);
+    }
+    
+    private void stack_material_property_input_init(){
+        // Material Visual Parameters
+        Label l_1 = new Label("Set Visual Parameters");
+        l_1.setStyle("-fx-font-family: Roboto; -fx-font-size: 15; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 0px 0px 2px 0px;");
+        l_1.setTextFill(Color.web("#00897b"));
+        // Material Tag
+        textfield_1.setStyle(text_style);
+        textfield_1.setPromptText("Tag");
+        textfield_1.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Populating JFXComboBox material type
+        combobox_1.getItems().clear();
+        combobox_1.setStyle(text_style);
+        combobox_1.setPromptText("Material Type");
+        combobox_1.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        combobox_1.getItems().add("Si");
+        combobox_1.getItems().add("Ge");
+        combobox_1.getItems().add("Al");
+        combobox_1.getItems().add("SiGe");
+        combobox_1.getItems().add("GaAs");
+        combobox_1.getItems().add("AL2O3");
+        combobox_1.getItems().add("SiO2");
+        // Material Width
+        textfield_2.setStyle(text_style);
+        textfield_2.setPromptText("Height (i.e. 1nm - 1000nm)");
+        textfield_2.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Height
+        textfield_3.setStyle(text_style);
+        textfield_3.setPromptText("Width (i.e. 1nm - 1000nm)");
+        textfield_3.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Depth
+        textfield_4.setStyle(text_style);
+        textfield_4.setPromptText("Depth (i.e. 1nm - 1000nm)");
+        textfield_4.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Color
+        Label l_2 = new Label("Material Color");
+        l_2.setStyle(text_style);
+        l_2.setTextFill(Color.web("#00897b"));
+        color_picker.setTranslateY(-10);
+        // Populating JFXComboBox material stack orientation
+        combobox_2.getItems().clear();
+        combobox_2.setStyle(text_style);
+        combobox_2.setPromptText("Stack Orientation");
+        combobox_2.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        combobox_2.getItems().add("Up");
+        combobox_2.getItems().add("Down"); 
+        combobox_2.getItems().add("Left");
+        combobox_2.getItems().add("Right"); 
+        combobox_2.getItems().add("Front");
+        combobox_2.getItems().add("Back");
+        // Boundary limit checkbox
+        checkbox_1.setStyle("-fx-font-family: Roboto; -fx-font-size: 12; -fx-font-weight: lighter;"
+                      + "-jfx-checked-color: #00897b; -jfx-unchecked-color: #006064; -jfx-label-float: true;");
+        checkbox_1.setText("Restrict Layout Bounds to Base");
+        // Material Physical Parameters
+        Label l_3 = new Label("Set Physical Parameters");
+        l_3.setStyle("-fx-font-family: Roboto; -fx-font-size: 15; -fx-font-weight: bold; -fx-border-color: #ffffff; -fx-border-width: 0px 0px 2px 0px;");
+        l_3.setTextFill(Color.web("#00897b"));
+        // Material Band Gap
+        textfield_5.setStyle(text_style);
+        textfield_5.setPromptText("Band Gap");
+        textfield_5.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Crystal Structure
+        textfield_6.setStyle(text_style);
+        textfield_6.setPromptText("Crystal Structure");
+        textfield_6.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Doping Type
+        Label l_4 = new Label("Doping Type");
+        l_4.setStyle(text_style);
+        l_4.setTextFill(Color.web("#00897b"));
+        toggle_1.setStyle(text_style);
+        toggle_1.setText("P");
+        toggle_1.selectedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(toggle_1.getText() == "P") toggle_1.setText("N");
+            else toggle_1.setText("P");
+        }));
+        toggle_1.setPadding(new Insets(-30, 0, -20, -5));
+        // Material Doping Density
+        textfield_7.setStyle(text_style);
+        textfield_7.setPromptText("Doping Density");
+        textfield_7.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Material Doping Ionization Model
+        textfield_8.setStyle(text_style);
+        textfield_8.setPromptText("Doping Ionization Model");
+        textfield_8.setPrefWidth(vbox_scrollpane.getPrefWidth()- 35);
+        // Okay Button
+        JFXButton okay_button = new JFXButton("Okay");
+        okay_button.setStyle("-fx-background-color: #558b2f; -jfx-button-type: RAISED; -fx-text-fill: #ffffff; -fx-background-radius: 10px;");
+        okay_button.setRipplerFill(Color.web("#ffffff"));
+        okay_button.setMinSize(75, 25);
+        okay_button.setTranslateY(20);
+        okay_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent event) {
+                if(!textfield_1.getText().isEmpty() && combobox_1.getValue() != null && combobox_2.getValue() != null && !textfield_2.getText().isEmpty() && !textfield_3.getText().isEmpty() &&
+                    !textfield_4.getText().isEmpty() && !textfield_5.getText().isEmpty() && !textfield_6.getText().isEmpty() && !textfield_7.getText().isEmpty() &&
+                    !textfield_8.getText().isEmpty()){
+                    confirmed_stack_f(event);
+                }
+                else{
+                    JFXDialogLayout input_empty = new JFXDialogLayout();
+                    input_empty.setHeading(new ImageView("/images/empty.png"));
+                    Text t = new Text("Some of the required text fields are empty.\nPlease fill them out accordingly.");
+                    t.setStyle("-fx-font-family: Roboto; -fx-font-size: 15px; -fx-text-fill: #c62828;");
+                    input_empty.setBody(t);
+
+                    JFXDialog input_empty_dialog = new JFXDialog(stackpane_main, input_empty, JFXDialog.DialogTransition.BOTTOM);
+                    JFXButton input_empty_button = new JFXButton("Okay");
+                    input_empty_button.setStyle(" -fx-background-color: #00838f; -fx-text-fill: white; ");
+
+                    input_empty_button.setOnAction((ActionEvent event1) -> {
+                        input_empty_dialog.close();
+                    });
+
+                    // set the contents within and display
+                    input_empty.setActions(input_empty_button);
+                    input_empty_dialog.show();
+                }
+            }
+        });
+        // Cancel Button
+        JFXButton cancel_button = new JFXButton("Cancel");
+        cancel_button.setStyle("-fx-background-color: #f44336; -jfx-button-type: RAISED; -fx-text-fill: #ffffff; -fx-background-radius: 10px;");
+        cancel_button.setRipplerFill(Color.web("#ffffff"));
+        cancel_button.setMinSize(75, 25);
+        cancel_button.setTranslateY(20);
+        cancel_button.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent event) {
+                activated_cancel_f(event);
+            }
+        });
+
+        vbox_scrollpane.setSpacing(20);
+        vbox_scrollpane.setPadding(new Insets(20, 0, 40, 12));
+        vbox_scrollpane.getChildren().clear();
+        vbox_scrollpane.getChildren().addAll(l_1, textfield_1, combobox_1, textfield_2, textfield_3, textfield_4, l_2,
+                                            color_picker, combobox_2, checkbox_1, l_3, textfield_5, textfield_6, l_4, toggle_1,  textfield_7, textfield_8, okay_button, cancel_button);
+    }
+    
+    private void resize_listener_f() {
+        // Dynamically change window size whenever window size is changed  
+        
+        stackpane_main.widthProperty().addListener((obs, oldVal, newVal) ->{
+            stackpane_main_w = newVal.doubleValue();
+            borderpane_main.setPrefWidth(stackpane_main_w);
+        });
+        stackpane_main.heightProperty().addListener((obs, oldVal, newVal) ->{
+            stackpane_main_h = newVal.doubleValue();
+            borderpane_main.setPrefHeight(stackpane_main_h);
+        });
+    }
+    
+    private void translator_f() {
+        // Pre-translate various containers for transitioning later when action has been made
+        anchorpaneleft_borderpane_main.setTranslateX( -(anchorpaneleft_borderpane_main.getPrefWidth()));
+        anchorpaneright_borderpane_main.setTranslateX(anchorpaneright_borderpane_main.getPrefWidth());
+    }
+    
     
     public void enable_draw(){
         // Print 3D Axes
@@ -1140,6 +1765,6 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     public void disable_draw(){
         anchorpanecenter_borderpane_main.getChildren().remove(workspace);
     }
-    // Main functions
-    // ************************************************************************************************* 
+    // Initializer functions
+    // *************************************************************************************************  
 }
