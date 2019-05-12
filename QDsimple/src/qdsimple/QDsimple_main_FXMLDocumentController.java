@@ -209,6 +209,8 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     private Button connect_button;
     @FXML
     private MenuItem save_image_mi;
+    @FXML
+    private MenuItem gate_image_mi;
    
     
     @Override
@@ -553,23 +555,27 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
     
     void connect_box(int n, int m,int side_no)              // n= box no which is to be connected , m= box no where it will connect
     {
-        
+        /*
+        double offset_x=box[m].getHeight()+(box[n].getHeight()-50);
+        double offset_y=box[m].getWidth()+(box[n].getWidth()-50);
+        double offset_z=box[m].getDepth()+(box[n].getDepth()-50);
+        */
         double offset_x=box[m].getHeight();
         double offset_y=box[m].getWidth();
         double offset_z=box[m].getDepth();
         
         
         
-        if( side_no==1)
+        if(side_no==1)
         {
             box[n].setLayoutX(box[m].getLayoutX());
             box[n].setLayoutY(box[m].getLayoutY());
             box[n].setTranslateZ(box[m].getTranslateZ()+offset_z);
-            /*
-            box[n].translateXProperty().set(box[m].getTranslateX());
-            box[n].translateYProperty().set(box[m].getTranslateY());
-            box[n].translateZProperty().set(box[m].getTranslateZ()+offset_z);
-            */
+            
+            System.out.println(box[m].getTranslateX()+" "+box[m].getTranslateY()+" "+box[m].getTranslateY()+" ");
+            System.out.println(box[n].getTranslateX()+" "+box[n].getTranslateY()+" "+box[n].getTranslateY()+" ");
+            
+            
         }
         else if( side_no==2)
         {
@@ -624,8 +630,8 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         if(file != null){
             try {
                 //Pad the capture area
-                WritableImage writableImage = new WritableImage((int)center_pane.getWidth() + 20,
-                        (int)center_pane.getHeight() + 20);
+                WritableImage writableImage = new WritableImage((int)center_pane.getWidth(),
+                        (int)center_pane.getHeight());
                 center_pane.snapshot(null, writableImage);
                 RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
                 //Write the snapshot to the chosen file
@@ -1452,6 +1458,7 @@ public class QDsimple_main_FXMLDocumentController implements Initializable {
         {
             group.getChildren().remove(box[id]);
             box[id]=null;
+            shape_list_cb.getItems().remove("box_"+id);
         }
         else if(type.equals("cylinder"))
         {
